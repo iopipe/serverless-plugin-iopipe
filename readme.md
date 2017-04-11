@@ -28,4 +28,6 @@ custom:
 It's powered by the the excellent [jscodeshift](https://github.com/facebook/jscodeshift). The plugin examines each handler and modifies the code only within the deployment package if it needs to.
 
 ## Known Issues
+This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
+
 If attempting to use es6 modules natively i.e. `export function handler...`, may not work.
