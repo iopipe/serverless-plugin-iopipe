@@ -21,7 +21,7 @@ function hasIOpipe(code){
 }
 
 function wrap(node){
-  const token = options().placeholder ? 'process.env.IOPIPE_TOKEN' : `'${options().token}'`;
+  const token = options().placeholder ? 'process.env.IOPIPE_TOKEN' : `\'${options().token || 'DEFAULT_TOKEN'}\'`;
   const str = `require('iopipe')({clientId: ${token}})(REPLACE)`;
   return j(str)
     .find(j.Identifier, {
@@ -77,10 +77,10 @@ function findWrapSite(code, method){
   return j(code).find(j.AssignmentExpression, findExportsPattern(method));
 }
 
-export default function transform(obj = {}, sls){
-  const {code, method} = obj;
+export default function transform(obj = {}, sls = {cli: console}){
+  const {code, method = 'handler'} = obj;
   if (hasIOpipe(code)){
-    sls.cli.log(`Found a reference to IOpipe already for ${obj.name}, skipping.`);
+    sls.cli.log(`Found a reference to IOpipe already for ${obj.name || method}, skipping.`);
     return _.assign({}, obj, {transformed: obj.code});
   }
   const transformed = findWrapSite(code, method)

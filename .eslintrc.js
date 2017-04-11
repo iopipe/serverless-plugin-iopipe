@@ -3,10 +3,12 @@ module.exports = {
   "extends": [
     "eslint:recommended",
   ],
+  "plugins": ["jest"],
   "env": {
     "browser": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "jest/globals": true
   },
   "ecmaFeatures": {
     "arrowFunctions": true,

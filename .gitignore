@@ -4,3 +4,4 @@
 *.log
 example/.serverless/*
 v8-compile-cache-*
+jest/*
