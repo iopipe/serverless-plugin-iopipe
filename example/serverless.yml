@@ -9,8 +9,8 @@ plugins:
 environment:
   NODE_ENV: ${env:NODE_ENV}
 custom:
-  iopipeToken: 'SAMPLE_TOKEN'
-  iopipeQuote: 'double'
+  iopipeToken: SAMPLE_TOKEN_FOO
+  iopipeQuote: double
   iopipeNoVerify: false
   iopipeExclude: excluded,foo
   iopipePlaceholder: false
