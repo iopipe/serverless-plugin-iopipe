@@ -40,7 +40,7 @@ function wrap(node) {
   }).replaceWith(node.right).toSource({ quote: (0, _options2.default)().quote });
 }
 
-function findHandlerExpression(method) {
+function findModulePattern(method) {
   return {
     left: {
       type: 'MemberExpression',
@@ -62,13 +62,37 @@ function findHandlerExpression(method) {
   };
 }
 
+function findExportsPattern(method) {
+  return {
+    left: {
+      type: 'MemberExpression',
+      object: {
+        type: 'Identifier',
+        name: 'exports'
+      },
+      property: {
+        type: 'Identifier',
+        name: method
+      }
+    }
+  };
+}
+
+function findWrapSite(code, method) {
+  const first = (0, _jscodeshift2.default)(code).find(_jscodeshift2.default.AssignmentExpression, findModulePattern(method));
+  if (first.size()) {
+    return first;
+  }
+  return (0, _jscodeshift2.default)(code).find(_jscodeshift2.default.AssignmentExpression, findExportsPattern(method));
+}
+
 function transform(obj = {}, sls) {
   const { code, method } = obj;
   if (hasIOpipe(code)) {
     sls.cli.log(`Found a reference to IOpipe already for ${obj.name}, skipping.`);
     return _lodash2.default.assign({}, obj, { transformed: obj.code });
   }
-  const transformed = (0, _jscodeshift2.default)(code).find(_jscodeshift2.default.AssignmentExpression, findHandlerExpression(method)).forEach(p => {
+  const transformed = findWrapSite(code, method).forEach(p => {
     p.node.right = wrap(p.node);
   }).toSource({ quote: (0, _options2.default)().quote });
   return _lodash2.default.assign({}, obj, { transformed });

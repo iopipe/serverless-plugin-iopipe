@@ -31,7 +31,7 @@ function wrap(node){
     .toSource({quote: options().quote});
 }
 
-function findHandlerExpression(method){
+function findModulePattern(method){
   return {
     left: {
       type: 'MemberExpression',
@@ -53,14 +53,37 @@ function findHandlerExpression(method){
   };
 }
 
+function findExportsPattern(method){
+  return {
+    left: {
+      type: 'MemberExpression',
+      object: {
+        type: 'Identifier',
+        name: 'exports'
+      },
+      property: {
+        type: 'Identifier',
+        name: method
+      }
+    }
+  };
+}
+
+function findWrapSite(code, method){
+  const first = j(code).find(j.AssignmentExpression, findModulePattern(method));
+  if (first.size()){
+    return first;
+  }
+  return j(code).find(j.AssignmentExpression, findExportsPattern(method));
+}
+
 export default function transform(obj = {}, sls){
   const {code, method} = obj;
   if (hasIOpipe(code)){
     sls.cli.log(`Found a reference to IOpipe already for ${obj.name}, skipping.`);
     return _.assign({}, obj, {transformed: obj.code});
   }
-  const transformed = j(code)
-    .find(j.AssignmentExpression, findHandlerExpression(method))
+  const transformed = findWrapSite(code, method)
     .forEach(p => {
       p.node.right = wrap(p.node);
     })

@@ -29,5 +29,7 @@ functions:
     handler: handlers/es5.handler
   multiple-dots-in-name:
     handler: handlers/multiple.dots.in.name.handler
+  noModule:
+    handler: handlers/noModule.handler
   excluded:
     handler: handlers/excluded.handler
