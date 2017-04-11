@@ -1,4 +1,4 @@
-# IOpipe Serverless Framework Plugin
+# IOpipe Serverless Framework Plugin (Alpha)
 
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 
