@@ -25,7 +25,7 @@ custom:
 # How Does it Work?
 `serverless-plugin-iopipe` wraps the handlers defined in `serverless.yml` with IOpipe so you don't have to. It allows you to deploy and upgrade multiple functions simultaneously.
 
-It's powered by the the excellent [jscodeshift](https://github.com/facebook/jscodeshift). The plugin examines each handler and modifies the code within the deployment package if it needs to.
+It's powered by the the excellent [jscodeshift](https://github.com/facebook/jscodeshift). The plugin examines each handler and modifies the code only within the deployment package if it needs to.
 
 ## Known Issues
 If attempting to use es6 modules natively i.e. `export function handler...`, may not work.
