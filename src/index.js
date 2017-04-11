@@ -98,7 +98,7 @@ class ServerlessIOpipePlugin {
   checkToken(){
     const token = options().token;
     if (!token){
-      throw new Error('No iopipe token found. Specify in the "custom" object in serverless.yml or use the --token flag.');
+      throw new Error('No iopipe token found. Specify "iopipeToken" in the "custom" object in serverless.yml.');
     }
   }
   getFuncs(){
