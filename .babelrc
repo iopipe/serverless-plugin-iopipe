@@ -1,6 +1,10 @@
 {
   "presets": [
-    "es2015", "stage-0"
+    ["env", {
+      "targets": {
+        "node": [">= 6.10"]
+      }
+    }]
   ],
   "plugins": [
     ["transform-runtime", {"polyfill": false, "regenerator": true}],
@@ -9,7 +13,6 @@
       "alias": {
         "util": "./util"
       }
-    }],
-    ["dynamic-import-node"]
+    }]
   ]
 }

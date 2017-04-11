@@ -20,7 +20,7 @@ var _options2 = _interopRequireDefault(_options);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function hasIOpipe(code) {
-  var size = (0, _jscodeshift2.default)(code).find(_jscodeshift2.default.CallExpression, {
+  const size = (0, _jscodeshift2.default)(code).find(_jscodeshift2.default.CallExpression, {
     callee: {
       name: 'require'
     },
@@ -33,8 +33,8 @@ function hasIOpipe(code) {
 }
 
 function wrap(node) {
-  var token = (0, _options2.default)().placeholder ? 'process.env.IOPIPE_TOKEN' : '\'' + (0, _options2.default)().token + '\'';
-  var str = 'require(\'iopipe\')({clientId: ' + token + '})(REPLACE)';
+  const token = (0, _options2.default)().placeholder ? 'process.env.IOPIPE_TOKEN' : `'${(0, _options2.default)().token}'`;
+  const str = `require('iopipe')({clientId: ${token}})(REPLACE)`;
   return (0, _jscodeshift2.default)(str).find(_jscodeshift2.default.Identifier, {
     name: 'REPLACE'
   }).replaceWith(node.right).toSource({ quote: (0, _options2.default)().quote });
@@ -62,18 +62,14 @@ function findHandlerExpression(method) {
   };
 }
 
-function transform() {
-  var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var sls = arguments[1];
-  var code = obj.code,
-      method = obj.method;
-
+function transform(obj = {}, sls) {
+  const { code, method } = obj;
   if (hasIOpipe(code)) {
-    sls.cli.log('Found a reference to IOpipe already for ' + obj.name + ', skipping.');
+    sls.cli.log(`Found a reference to IOpipe already for ${obj.name}, skipping.`);
     return _lodash2.default.assign({}, obj, { transformed: obj.code });
   }
-  var transformed = (0, _jscodeshift2.default)(code).find(_jscodeshift2.default.AssignmentExpression, findHandlerExpression(method)).forEach(function (p) {
+  const transformed = (0, _jscodeshift2.default)(code).find(_jscodeshift2.default.AssignmentExpression, findHandlerExpression(method)).forEach(p => {
     p.node.right = wrap(p.node);
   }).toSource({ quote: (0, _options2.default)().quote });
-  return _lodash2.default.assign({}, obj, { transformed: transformed });
+  return _lodash2.default.assign({}, obj, { transformed });
 }
