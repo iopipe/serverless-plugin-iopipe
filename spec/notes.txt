@@ -1,0 +1,2 @@
+// test different handler names foo.bar.handler etc
+// make sure it bails if iopipe is already included

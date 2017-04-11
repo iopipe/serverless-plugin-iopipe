@@ -1,0 +1,53 @@
+{
+  "author": "IOpipe <dev@iopipe.com>",
+  "bugs": {
+    "url": "https://github.com/iopipe/serverless-plugin-iopipe/issues"
+  },
+  "dependencies": {
+    "fs-extra": "^2.1.2",
+    "jscodeshift": "^0.3.30",
+    "lodash": "^4.17.4"
+  },
+  "description": "Serverless Plugin IOpipe",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.2.1",
+    "babel-plugin-dynamic-import-node": "^1.0.0",
+    "babel-plugin-module-resolver": "^2.4.0",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "eslint": "^3.19.0",
+    "serverless": "^1.8.0"
+  },
+  "homepage": "https://github.com/iopipe/serverless-plugin-iopipe#readme",
+  "keywords": [
+    "lambda",
+    "serverless",
+    "sls",
+    "agent",
+    "analytics",
+    "metrics",
+    "telemetry",
+    "tracing",
+    "distributed tracing",
+    "jscodeshift",
+    "codemod"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "name": "serverless-plugin-iopipe",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iopipe/serverless-plugin-iopipe.git"
+  },
+  "scripts": {
+    "build": "yarn run folder && yarn run babel",
+    "babel": "./node_modules/babel-cli/bin/babel.js src --out-dir dist",
+    "eslint": "./node_modules/eslint/bin/eslint.js src/**",
+    "folder": "rm -rf dist && mkdir dist",
+    "sls": "npm run build && npm run build --prefix example",
+    "test": "npm run eslint"
+  },
+  "version": "0.0.1"
+}
