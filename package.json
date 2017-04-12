@@ -54,10 +54,11 @@
     "babel": "./node_modules/babel-cli/bin/babel.js src --out-dir dist",
     "eslint": "./node_modules/eslint/bin/eslint.js src/**",
     "folder": "rm -rf dist && mkdir dist",
-    "sls": "npm run build && npm run build --prefix example",
     "jest": "jest --coverage",
     "jestUpdateSnapshot": "jest --updateSnapshot",
-    "test": "npm run eslint"
+    "prepublish": "yarn run build",
+    "sls": "yarn run build && yarn run build --prefix example",
+    "test": "yarn run eslint"
   },
   "version": "0.0.1"
 }
