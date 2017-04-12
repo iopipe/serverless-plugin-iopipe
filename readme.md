@@ -4,11 +4,22 @@
 
 A [serverless](http://www.serverless.com) plugin to automatically wrap your functions with [iopipe](https://iopipe.com).
 
+# Requirements
+The [iopipe](https://github.com/iopipe/iopipe)
+
 # Install
+With [yarn](https://yarnpkg.com) (recommended):
+```
+yarn add iopipe
+yarn add serverless-plugin-iopipe --save-dev
+```
+
 With npm:
 ```
+npm install iopipe
 npm install serverless-plugin-iopipe --save-dev
 ```
+
 
 Add the plugin to your `serverless.yml` file:
 ```yaml
@@ -56,3 +67,6 @@ Example: `iopipeExclude: myExcludedHandler,alphaLambdaHandler`
 This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
 
 If attempting to use es6 modules natively i.e. `export function handler...`, may not work.
+
+## Support
+File an issue here, hit us up [on Slack](https://iopipe.now.sh/), or send us a note at [support@iopipe.com](mailto@support@iopipe.com)
