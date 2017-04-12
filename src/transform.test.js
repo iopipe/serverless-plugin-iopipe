@@ -21,6 +21,11 @@ test('es5.js transformed matches screenshot', () => {
   expect(next.transformed).toMatchSnapshot();
 });
 
+test('es5Named.js transformed matches screenshot', () => {
+  const next = transform({code: files.es5Named});
+  expect(next.transformed).toMatchSnapshot();
+});
+
 test('multiple.js transformed matches screenshot', () => {
   const next = transform({code: files.multiple});
   expect(next.transformed).toMatchSnapshot();

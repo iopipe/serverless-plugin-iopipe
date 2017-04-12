@@ -14,6 +14,20 @@ exports[`es5.js transformed matches screenshot 1`] = `
 "
 `;
 
+exports[`es5Named.js transformed matches screenshot 1`] = `
+"module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN'})(function handle(event, context, callback){
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'Go Serverless v1.0! Your function executed successfully!',
+      input: event
+    })
+  };
+  callback(null, response);
+});
+"
+`;
+
 exports[`hasLib.js transformed matches screenshot 1`] = `
 "const iopipe = require('iopipe')({clientId: 'FOOBAR'});
 
