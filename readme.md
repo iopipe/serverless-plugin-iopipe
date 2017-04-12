@@ -30,28 +30,23 @@ It's powered by the the excellent [jscodeshift](https://github.com/facebook/jsco
 # Options
 All options are set [in the "custom" config](https://serverless.com/framework/docs/providers/aws/guide/plugins#installing-plugins) in `serverless.yml`
 
-### iopipeToken
-Required: true
+#### `iopipeToken`
 
 The token (clientId) of the project you would like to wrap your functions with.
 
-### iopipeNoVerify
-Required: false
+#### `iopipeNoVerify` (optional)
 
 Skip a check that ensures iopipe is installed via npm/yarn and present in package.json
 
-### iopipeNoUpgrade
-Required: false
+#### `iopipeNoUpgrade` (optional)
 
 The plugin automatically upgrades the IOpipe library to the most recent minor version. Use this option to disable that feature.
 
-### iopipeNoYarn
-Required: false
+#### `iopipeNoYarn` (optional)
 
 When auto-upgrading, Yarn will be used in place of NPM if a yarn.lock file is found. Use this flag disable yarn and use NPM to upgrade the iopipe library.
 
-### iopipeExclude
-Required: false
+#### `iopipeExclude` (optional)
 
 Exclude certain handlers from being wrapped with IOpipe. Comma separated string.
 
