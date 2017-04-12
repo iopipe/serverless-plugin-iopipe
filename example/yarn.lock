@@ -232,9 +232,9 @@ babel-core@^6.24.1:
     slash "^1.0.0"
     source-map "^0.5.0"
 
-babel-eslint@^7.2.1:
-  version "7.2.1"
-  resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-7.2.1.tgz#079422eb73ba811e3ca0865ce87af29327f8c52f"
+babel-eslint@^7.2.2:
+  version "7.2.2"
+  resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-7.2.2.tgz#0da2cbe6554fd0fb069f19674f2db2f9c59270ff"
   dependencies:
     babel-code-frame "^6.22.0"
     babel-traverse "^6.23.1"
@@ -1803,7 +1803,7 @@ invariant@^2.2.0:
   dependencies:
     loose-envify "^1.0.0"
 
-iopipe@^0.2.1:
+iopipe@0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/iopipe/-/iopipe-0.2.1.tgz#32a6c2a00ac7b4770dbe8e4f9fff1962ef3b0a0b"
   dependencies:
