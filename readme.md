@@ -30,7 +30,7 @@ It's powered by the the excellent [jscodeshift](https://github.com/facebook/jsco
 # Options
 All options are set [in the "custom" config](https://serverless.com/framework/docs/providers/aws/guide/plugins#installing-plugins) in `serverless.yml`
 
-#### `iopipeToken`
+#### `iopipeToken` (required)
 
 The token (clientId) of the project you would like to wrap your functions with.
 
