@@ -1,16 +1,17 @@
 import _ from 'lodash';
 import fs from 'fs-extra';
 import {join} from 'path';
+import {exec} from 'child_process';
 
 import transform from './transform';
 import options from './options';
-
-let funcs = [];
 
 class ServerlessIOpipePlugin {
   constructor(sls, opts) {
     this.sls = sls;
     this.setOptions(opts);
+    this.package = {};
+    this.funcs = [];
     this.commands = {
       iopipe: {
         usage: 'Helps you start your first Serverless plugin',
@@ -37,6 +38,18 @@ class ServerlessIOpipePlugin {
             required: false,
             shortcut: 'nv'
           },
+          noUpgrade: {
+            usage:
+              'The plugin automatically upgrades the IOpipe library to the most recent minor version. Use this option to disable that feature.',
+            required: false,
+            shortcut: 'nu'
+          },
+          noYarn: {
+            usage:
+              'When auto-upgrading, Yarn will be used in place of NPM if a yarn.lock file is found. Use this flag disable yarn and use NPM to upgrade the iopipe library.',
+            required: false,
+            shortcut: 'ny'
+          },
           exclude: {
             usage:
               'Exclude certain handlers from being wrapped with IOpipe',
@@ -59,14 +72,29 @@ class ServerlessIOpipePlugin {
       'iopipe:finish': this.finish.bind(this)
     };
   }
+  log(arg1, ...rest){
+    //sls doesn't actually support multiple args to log? w/e
+    this.sls.cli.log(`serverless-plugin-iopipe: ${arg1}`, ...rest);
+  }
   run(){
-    this.sls.cli.log('Wrapping your functions with IO|...');
-    this.setOptions();
+    this.log('Wrapping your functions with IO|...', 'wow!', 'really fun stuff');
+    this.setPackage();
     this.checkForLib();
+    this.upgradeLib();
     this.checkToken();
     this.getFuncs();
     this.transform();
     this.operate();
+  }
+  setPackage(){
+    const prefix = process.env.npm_config_prefix;
+    if (prefix){
+      try {
+        this.package = JSON.parse(fs.readFileSync(join(prefix, 'package.json')));
+      } catch (err){
+        _.noop();
+      }
+    }
   }
   setOptions(opts){
     const custom = _.chain(this.sls)
@@ -84,16 +112,56 @@ class ServerlessIOpipePlugin {
   }
   checkForLib(){
     const prefix = process.env.npm_config_prefix;
+    let dependencies = {};
     if (prefix){
-      const {dependencies = {}} = JSON.parse(fs.readFileSync(join(prefix, 'package.json')));
+      try {
+        dependencies = JSON.parse(fs.readFileSync(join(prefix, 'package.json'))).dependencies;
+      } catch (err){
+        this.log('No package.json found, skipping lib check.');
+        return true;
+      }
       if (!dependencies.iopipe){
         if (options().noVerify){
-          return this.sls.cli.log('Skipping iopipe module installation check.');
+          this.log('Skipping iopipe module installation check.');
+          return true;
         }
         throw new Error('IOpipe module not found in package.json. Make sure to install it via npm or yarn, or use the --noVerify option for serverless-plugin-iopipe.');
       }
     }
     return true;
+  }
+  upgradeLib(){
+    const prefix = process.env.npm_config_prefix;
+    const files = fs.readdirSync(prefix);
+    const useYarn = _.includes(files, 'yarn.lock');
+    const packageManager = useYarn ? 'yarn' : 'npm';
+    exec('npm outdated iopipe', (e, stdout1 = '', stderr1 = '') => {
+      if (stderr1){
+        this.log('Could not finish upgrading IOpipe automatically.');
+        return true;
+      }
+      const arr = stdout1.split('\n');
+      const line2Arr = _.compact((arr[1] || '').split(' '));
+      const libName = line2Arr[0];
+      const wantedVersion = line2Arr[3];
+      if (libName === 'iopipe' && wantedVersion){
+        // set version to newer
+        this.package.dependencies.iopipe = wantedVersion;
+        // write package.json to file
+        fs.writeFileSync(join(prefix, 'package.json'), JSON.stringify(this.package, null, '  '));
+        exec(`${packageManager} install`, (e2, stdout2 = '', stderr2 = '') => {
+          if (useYarn && stdout2.match('success') || !useYarn && !stderr1){
+            return this.log(`Upgraded IOpipe to ${wantedVersion} automatically. 💪`);
+          }
+          this.log('Ran into an error attempting to upgrade IOpipe automatically.');
+          const err = stderr2 || stderr1 || 'Unknown error.';
+          return this.log(err);
+        });
+      } else if (!libName){
+        return this.log('You have the latest IOpipe library. Nice work!');
+      }
+      return true;
+    });
   }
   checkToken(){
     const token = options().token;
@@ -104,7 +172,7 @@ class ServerlessIOpipePlugin {
   getFuncs(){
     try {
       const {servicePath} = this.sls.config;
-      funcs = _.chain(this.sls.service.functions)
+      this.funcs = _.chain(this.sls.service.functions)
         .omit(options().exclude)
         .values()
         .map(obj => {
@@ -124,21 +192,21 @@ class ServerlessIOpipePlugin {
     }
   }
   transform(){
-    if (_.isArray(funcs) && funcs.length){
-      funcs = funcs.map(f => transform(f, this.sls));
+    if (_.isArray(this.funcs) && this.funcs.length){
+      this.funcs = this.funcs.map(f => transform(f, this.sls));
       return true;
     }
     throw new Error('No functions to wrap iopipe with.');
   }
   operate(){
-    funcs.forEach(f => {
+    this.funcs.forEach(f => {
       fs.writeFileSync(`${f.path}.original.js`, f.code);
       fs.writeFileSync(f.path, f.transformed);
     });
   }
   finish(){
-    this.sls.cli.log('Successfully wrapped functions with IOpipe, cleaning up.');
-    funcs.forEach(f => {
+    this.log('Successfully wrapped functions with IOpipe, cleaning up.');
+    this.funcs.forEach(f => {
       fs.writeFileSync(f.path, f.code);
       fs.removeSync(`${f.path}.original.js`);
     });
