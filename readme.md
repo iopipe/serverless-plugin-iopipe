@@ -71,6 +71,7 @@ Use `process.env.IOPIPE_TOKEN` as a placeholder variable to allow the token to b
 
 ## Known Issues
 - This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
+- If your `package.json` is located in a non-standard place, auto-upgrading may not work.
 - If attempting to use es6 modules natively i.e. `export function handler...`, may not work.
 
 ## Support
