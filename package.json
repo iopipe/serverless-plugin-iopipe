@@ -6,7 +6,8 @@
   "dependencies": {
     "fs-extra": "^2.1.2",
     "jscodeshift": "^0.3.30",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "pre-commit": "^1.2.2"
   },
   "description": "Serverless Plugin IOpipe",
   "devDependencies": {
@@ -19,7 +20,6 @@
     "eslint": "^3.19.0",
     "eslint-plugin-jest": "^19.0.1",
     "jest": "^19.0.2",
-    "pre-commit": "^1.2.2",
     "serverless": "^1.8.0"
   },
   "engines": {
@@ -43,7 +43,7 @@
   "main": "dist/index.js",
   "name": "serverless-plugin-iopipe",
   "pre-commit": [
-    "eslint"
+    "test"
   ],
   "repository": {
     "type": "git",
@@ -51,14 +51,14 @@
   },
   "scripts": {
     "build": "yarn run folder && yarn run babel",
-    "babel": "./node_modules/babel-cli/bin/babel.js src --out-dir dist",
+    "babel": "./node_modules/babel-cli/bin/babel.js src --out-dir dist --ignore **/*.test.js,**/__mocks__/**",
     "eslint": "./node_modules/eslint/bin/eslint.js src/**",
     "folder": "rm -rf dist && mkdir dist",
     "jest": "jest --coverage",
     "jestUpdateSnapshot": "jest --updateSnapshot",
     "prepublish": "yarn run build",
-    "sls": "yarn run build && yarn run build --prefix example",
-    "test": "yarn run eslint"
+    "sls": "yarn run build && npm run build --prefix example",
+    "test": "yarn run eslint && yarn run jest"
   },
   "version": "0.0.1"
 }
