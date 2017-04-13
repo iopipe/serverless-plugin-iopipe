@@ -66,9 +66,8 @@ iopipeExclude: myExcludedHandler,alphaLambdaHandler
 ```
 
 ## Known Issues
-This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
-
-If attempting to use es6 modules natively i.e. `export function handler...`, may not work.
+- This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
+- If attempting to use es6 modules natively i.e. `export function handler...`, may not work.
 
 ## Support
 File an issue here, hit us up [on Slack](https://iopipe.now.sh/), or send us a note at [support@iopipe.com](mailto:support@iopipe.com)
