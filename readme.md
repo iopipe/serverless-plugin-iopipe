@@ -5,7 +5,11 @@
 A [serverless](http://www.serverless.com) plugin to automatically wrap your functions with [iopipe](https://iopipe.com).
 
 # Requirements
-The [iopipe](https://github.com/iopipe/iopipe)
+- Node >= `6.10`
+- NPM >= `3.0`
+- Yarn >= `0.22.0` (optional)
+- A valid `package.json` file
+- A valid `serverless.yml` file
 
 # Install
 With [yarn](https://yarnpkg.com) (recommended):
