@@ -65,9 +65,9 @@ When auto-upgrading, Yarn will be used in place of NPM if a yarn.lock file is fo
 
 Exclude certain functions from the plugin. Comma separated string.
 
-```yaml
-iopipeExclude: myExcludedHandler,alphaLambdaHandler
-```
+#### `iopipePlaceholder` (optional)
+
+Use `process.env.IOPIPE_TOKEN` as a placeholder variable to allow the token to be configured via environment variables in Serverless, AWS CLI, or AWS Console instead of embedding the token string directly.
 
 ## Known Issues
 - This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
