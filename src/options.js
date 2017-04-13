@@ -3,6 +3,7 @@ let options = {};
 
 export default function(obj = options){
   options = _.chain(obj)
+    .defaults(options)
     .defaults({
       quote: 'single'
     })

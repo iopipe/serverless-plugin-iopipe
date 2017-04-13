@@ -14,7 +14,7 @@ class ServerlessIOpipePlugin {
     this.funcs = [];
     this.commands = {
       iopipe: {
-        usage: 'Helps you start your first Serverless plugin',
+        usage: 'Automatically wraps your function handlers in IOpipe, so you don\'t have to.',
         lifecycleEvents: [
           'run',
           'finish'
