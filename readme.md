@@ -59,9 +59,8 @@ When auto-upgrading, Yarn will be used in place of NPM if a yarn.lock file is fo
 
 #### `iopipeExclude` (optional)
 
-Exclude certain handlers from being wrapped with IOpipe. Comma separated string.
+Exclude certain functions from the plugin. Comma separated string.
 
-Example
 ```yaml
 iopipeExclude: myExcludedHandler,alphaLambdaHandler
 ```
