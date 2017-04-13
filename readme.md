@@ -61,7 +61,10 @@ When auto-upgrading, Yarn will be used in place of NPM if a yarn.lock file is fo
 
 Exclude certain handlers from being wrapped with IOpipe. Comma separated string.
 
-Example: `iopipeExclude: myExcludedHandler,alphaLambdaHandler`
+Example
+```yaml
+iopipeExclude: myExcludedHandler,alphaLambdaHandler
+```
 
 ## Known Issues
 This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
@@ -69,4 +72,4 @@ This plugin attempts to skip handlers that are already wrapped, but edge cases m
 If attempting to use es6 modules natively i.e. `export function handler...`, may not work.
 
 ## Support
-File an issue here, hit us up [on Slack](https://iopipe.now.sh/), or send us a note at [support@iopipe.com](mailto@support@iopipe.com)
+File an issue here, hit us up [on Slack](https://iopipe.now.sh/), or send us a note at [support@iopipe.com](mailto:support@iopipe.com)
