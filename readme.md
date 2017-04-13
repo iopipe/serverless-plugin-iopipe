@@ -31,7 +31,7 @@ plugins:
   - serverless-plugin-iopipe
 ```
 
-Add your IOpipe project token within the "custom" config in `serverless.yml`
+Add your IOpipe project token within the "custom" config in `serverless.yml`. [Where is the token?](https://dashboard.iopipe.com/install)
 ```yaml
 custom:
   iopipeToken: YOUR_TOKEN HERE
