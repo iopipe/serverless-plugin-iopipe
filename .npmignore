@@ -1,3 +1,8 @@
 .DS_Store
-example/*
 spec/*
+*.test.js
+__mocks__
+__snapshots__
+jest
+coverage
+example
