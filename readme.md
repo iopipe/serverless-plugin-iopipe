@@ -15,7 +15,7 @@ A [serverless](http://www.serverless.com) plugin to automatically wrap your func
 With [yarn](https://yarnpkg.com) (recommended):
 ```
 yarn add iopipe
-yarn add serverless-plugin-iopipe --save-dev
+yarn add serverless-plugin-iopipe --dev
 ```
 
 With npm:
