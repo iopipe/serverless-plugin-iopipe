@@ -10,8 +10,7 @@
     "jscodeshift": "^0.3.30",
     "lodash": "^4.17.4",
     "pify": "^2.3.0",
-    "pre-commit": "^1.2.2",
-    "ramda": "^0.23.0"
+    "pre-commit": "^1.2.2"
   },
   "description": "Serverless Plugin IOpipe",
   "devDependencies": {

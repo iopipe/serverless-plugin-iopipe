@@ -3,7 +3,6 @@ import fs from 'fs-extra';
 import {exec} from 'child_process';
 import {basename, join, resolve} from 'path';
 import pify from 'pify';
-// import CJSON from 'circular-json';
 
 import transform from './transform';
 import options from './options';
@@ -77,7 +76,7 @@ class ServerlessIOpipePlugin {
     };
   }
   log(arg1, ...rest){
-    //sls doesn't actually support multiple args to log? w/e
+    //sls doesn't actually support multiple args to log?
     const logger = this.sls.cli.log || console.log;
     logger.call(this.sls.cli, `serverless-plugin-iopipe: ${arg1}`, ...rest);
   }
@@ -218,9 +217,6 @@ class ServerlessIOpipePlugin {
     } catch (err){
       this.log(err);
     }
-    // this.sls.service.functions = setPackageAndHandler(
-    //   this.sls.service.functions
-    // );
   }
   operate(){
     this.funcs.forEach(f => {
