@@ -4,9 +4,12 @@
     "url": "https://github.com/iopipe/serverless-plugin-iopipe/issues"
   },
   "dependencies": {
+    "babel-preset-stage-0": "^6.24.1",
+    "circular-json": "^0.3.1",
     "fs-extra": "^2.1.2",
     "jscodeshift": "^0.3.30",
     "lodash": "^4.17.4",
+    "pify": "^2.3.0",
     "pre-commit": "^1.2.2"
   },
   "description": "Serverless Plugin IOpipe",
@@ -50,11 +53,12 @@
     "url": "git+https://github.com/iopipe/serverless-plugin-iopipe.git"
   },
   "scripts": {
-    "build": "yarn run folder && yarn run babel",
+    "build": "yarn run folder && yarn run babel && yarn run copy",
     "babel": "./node_modules/babel-cli/bin/babel.js src --out-dir dist --ignore **/*.test.js,**/__mocks__/**",
+    "copy": "node dist/util/copyDist",
     "eslint": "./node_modules/eslint/bin/eslint.js src/**",
     "folder": "rm -rf dist && mkdir dist",
-    "jest": "jest --coverage",
+    "jest": "jest",
     "jestUpdateSnapshot": "jest --updateSnapshot",
     "prepublish": "yarn run build",
     "sls": "yarn run build && npm run build --prefix example",

@@ -4,7 +4,8 @@
       "targets": {
         "node": [">= 6.10"]
       }
-    }]
+    }],
+    "stage-0"
   ],
   "plugins": [
     ["transform-runtime", {"polyfill": false, "regenerator": true}],
