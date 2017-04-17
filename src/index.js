@@ -2,8 +2,8 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import {exec} from 'child_process';
 import {basename, join, resolve} from 'path';
-import CJSON from 'circular-json';
 import pify from 'pify';
+// import CJSON from 'circular-json';
 
 import transform from './transform';
 import options from './options';
@@ -14,7 +14,7 @@ class ServerlessIOpipePlugin {
     this.setOptions(opts);
     this.package = {};
     this.funcs = [];
-    this.prefix = opts.prefix || process.env.npm_config_prefix;
+    this.prefix = opts.prefix || this.sls.config.servicePath || process.env.npm_config_prefix;
     this.originalServicePath = this.sls.config.servicePath;
     this.commands = {
       iopipe: {
@@ -71,7 +71,7 @@ class ServerlessIOpipePlugin {
     };
     this.hooks = {
       'before:deploy:createDeploymentArtifacts': this.run.bind(this),
-      'after:deploy:compileFunctions': this.finish.bind(this),
+      'after:deploy:createDeploymentArtifacts': this.finish.bind(this),
       'iopipe:run': this.run.bind(this),
       'iopipe:finish': this.finish.bind(this)
     };
@@ -138,7 +138,6 @@ class ServerlessIOpipePlugin {
     const files = fs.readdirSync(this.prefix);
     const useYarn = _.includes(files, 'yarn.lock');
     const packageManager = useYarn ? 'yarn' : 'npm';
-    console.log(packageManager);
     exec('npm outdated iopipe', (e, stdout1 = '', stderr1 = '') => {
       if (stderr1){
         this.log('Could not finish upgrading IOpipe automatically.');
@@ -208,31 +207,35 @@ class ServerlessIOpipePlugin {
       .thru(fs.readdirSync)
       .difference(['node_modules', '.iopipe'])
       .value();
-    console.log(files);
-    // console.log(CJSON.stringify(this.sls));
-    fs.ensureDir(resolve(this.prefix, '.iopipe'));
+    fs.ensureDirSync(resolve(this.prefix, '.iopipe'));
     const copy = pify(fs.copy);
     try {
       await Promise.all(files.map(file => {
         return copy(resolve(this.prefix, file), resolve(this.prefix, '.iopipe/', file));
       }));
+      fs.symlinkSync(resolve(this.prefix, 'node_modules'), resolve(this.prefix, '.iopipe/node_modules'));
       this.sls.config.servicePath = join(this.originalServicePath, '.iopipe');
     } catch (err){
       this.log(err);
     }
+    // this.sls.service.functions = setPackageAndHandler(
+    //   this.sls.service.functions
+    // );
   }
   operate(){
     this.funcs.forEach(f => {
-      // this.sls.functions[f.name].handler = basename(f.handler);
-      // console.log(this.sls.service.functions[f.name]);
       fs.writeFileSync(join(this.sls.config.servicePath, f.fileName + '.js'), f.transformed);
     });
   }
   finish(){
     this.log('Successfully wrapped functions with IOpipe, cleaning up.');
-    console.log(CJSON.stringify(this.sls));
-    // this.sls.config.servicePath =
-    // fs.removeSync(join(this.originalServicePath, '.iopipe'));
+    fs.copySync(
+      join(this.originalServicePath, '.iopipe', '.serverless'),
+      join(this.originalServicePath, '.serverless')
+    );
+    this.sls.service.package.artifact = join(this.originalServicePath, '.serverless', basename(this.sls.service.package.artifact));
+    this.sls.config.servicePath = this.originalServicePath;
+    fs.removeSync(join(this.originalServicePath, '.iopipe'));
   }
 }
 

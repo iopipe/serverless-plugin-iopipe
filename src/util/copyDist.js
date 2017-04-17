@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
-import path from 'path';
+import {resolve} from 'path';
 
-const distFolder = path.resolve(__dirname, '../');
-const newFolder = path.resolve(__dirname, '../../example/.serverless_plugins/serverless-plugin-iopipe');
+const distFolder = resolve(__dirname, '../');
+const newFolder = resolve(__dirname, '../../example/.serverless_plugins/serverless-plugin-iopipe');
 
 fs.copySync(distFolder, newFolder);

@@ -81,12 +81,12 @@ test('Skips lib check if opts specify noVerify', () => {
 test('Throws error if iopipe is not found in valid package.json', () => {
   let targetErr = undefined;
   try {
-    Plugin.checkForLib({dependencies: {lodash: '4.17.4'}})
+    Plugin.checkForLib({dependencies: {lodash: '4.17.4'}});
   } catch (err){
     targetErr = err;
   }
   expect(targetErr).toBeInstanceOf(Error);
-  expect(targetErr.message).toMatch(/module not found/)
+  expect(targetErr.message).toMatch(/module not found/);
 });
 
 test('Throws error if iopipe token is not found', () => {
