@@ -11,6 +11,7 @@
     "jscodeshift": "^0.3.30",
     "lodash": "^4.17.4",
     "pify": "^2.3.0",
+    "postinstall-build": "^3.0.1",
     "pre-commit": "^1.2.2"
   },
   "description": "Serverless Plugin IOpipe",
@@ -69,7 +70,7 @@
     "jest": "jest",
     "jestUpdateSnapshot": "jest --updateSnapshot",
     "prepublish": "npm run build",
-    "postinstall": "npm run build",
+    "postinstall": "postinstall-build dist",
     "sls": "npm run build && npm run build --prefix example",
     "test": "npm run eslint && npm run jest"
   },
