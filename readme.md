@@ -26,7 +26,6 @@ npm install iopipe
 npm install serverless-plugin-iopipe --save-dev
 ```
 
-
 Add the plugin to your `serverless.yml` file:
 ```yaml
 plugins:
@@ -38,6 +37,8 @@ Add your IOpipe project token within the "custom" config in `serverless.yml`. [W
 custom:
   iopipeToken: YOUR_TOKEN HERE
 ```
+
+You're set! The plugin will run during an `sls deploy`.
 
 # How Does it Work?
 `serverless-plugin-iopipe` wraps the function handlers defined in `serverless.yml` with IOpipe so you don't have to. It allows you to deploy and upgrade multiple functions simultaneously.

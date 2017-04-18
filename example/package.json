@@ -10,6 +10,7 @@
   "scripts": {
     "build": "sls deploy --noDeploy",
     "deploy": "sls deploy",
+    "greet": "sls iopipe",
     "test": "npm run eslint"
   },
   "author": "",

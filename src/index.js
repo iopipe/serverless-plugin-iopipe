@@ -24,8 +24,7 @@ class ServerlessIOpipePlugin {
       iopipe: {
         usage: 'Automatically wraps your function handlers in IOpipe, so you don\'t have to.',
         lifecycleEvents: [
-          'run',
-          'finish'
+          'run'
         ],
         options: {
           token: {
@@ -76,14 +75,22 @@ class ServerlessIOpipePlugin {
     this.hooks = {
       'before:deploy:createDeploymentArtifacts': this.run.bind(this),
       'after:deploy:createDeploymentArtifacts': this.finish.bind(this),
-      'iopipe:run': this.run.bind(this),
-      'iopipe:finish': this.finish.bind(this)
+      'iopipe:run': this.greeting.bind(this)
     };
   }
   log(arg1, ...rest){
     //sls doesn't actually support multiple args to log?
     const logger = this.sls.cli.log || console.log;
     logger.call(this.sls.cli, `serverless-plugin-iopipe: ${arg1}`, ...rest);
+  }
+  greeting(){
+    this.log('Welcome to the IOpipe Serverless plugin.');
+    const {token} = options();
+    if (token){
+      this.log('You have your token specified, so you are all set! Just run sls deploy for the magic.');
+    } else {
+      this.log('Whoops! You are missing the iopipeToken custom variable in your serverless.yml');
+    }
   }
   async run(){
     this.log('Wrapping your functions with IO|...');
