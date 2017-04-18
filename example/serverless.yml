@@ -33,3 +33,5 @@ functions:
     handler: handlers/noModule.handler
   excluded:
     handler: handlers/excluded.handler
+  es5Named:
+    handler: handlers/es5Named.handler

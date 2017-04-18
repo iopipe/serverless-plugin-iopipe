@@ -4,8 +4,8 @@
   "description": "",
   "main": "handler.js",
   "dependencies": {
-    "iopipe": "0.2.1",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "iopipe": "0.2.1"
   },
   "scripts": {
     "build": "sls deploy --noDeploy",

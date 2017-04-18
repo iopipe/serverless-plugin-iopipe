@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Gets funcs 1`] = `
+"const uuid = require('uuid');
+
+module.exports.handler = (event, context, callback) => {
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'Your uuid is: ' + uuid.v4(),
+      input: event
+    })
+  };
+  callback(null, response);
+};
+"
+`;
+
+exports[`Saves transformed files to .iopipe folder 1`] = `
+"const uuid = require('uuid');
+
+module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN'})((event, context, callback) => {
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'Your uuid is: ' + uuid.v4(),
+      input: event
+    })
+  };
+  callback(null, response);
+});
+"
+`;
+
+exports[`Transforms from plugin 1`] = `
+"const uuid = require('uuid');
+
+module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN'})((event, context, callback) => {
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'Your uuid is: ' + uuid.v4(),
+      input: event
+    })
+  };
+  callback(null, response);
+});
+"
+`;

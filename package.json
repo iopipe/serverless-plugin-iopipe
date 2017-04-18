@@ -6,6 +6,7 @@
   "dependencies": {
     "babel-preset-stage-0": "^6.24.1",
     "circular-json": "^0.3.1",
+    "debug": "^2.6.3",
     "fs-extra": "^2.1.2",
     "jscodeshift": "^0.3.30",
     "lodash": "^4.17.4",
@@ -29,6 +30,13 @@
     "node": ">=6.10.0"
   },
   "homepage": "https://github.com/iopipe/serverless-plugin-iopipe#readme",
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "example",
+      "dist"
+    ]
+  },
   "keywords": [
     "lambda",
     "serverless",

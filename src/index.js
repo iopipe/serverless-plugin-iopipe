@@ -1,11 +1,16 @@
 import _ from 'lodash';
 import fs from 'fs-extra';
 import {exec} from 'child_process';
-import {basename, join, resolve} from 'path';
+import {basename, join, resolve as resolvePath} from 'path';
 import pify from 'pify';
+import {default as debugLib} from 'debug';
 
 import transform from './transform';
 import options from './options';
+
+function createDebugger(suffix){
+  return debugLib(`serverless-plugin-iopipe:${suffix}`);
+}
 
 class ServerlessIOpipePlugin {
   constructor(sls = {}, opts) {
@@ -133,37 +138,59 @@ class ServerlessIOpipePlugin {
     }
     return true;
   }
-  upgradeLib(){
+  upgradeLib(targetVerison, preCmd = 'echo Installing.'){
+    const debug = createDebugger('upgrade');
+    let wantedVersion = targetVerison;
     const files = fs.readdirSync(this.prefix);
     const useYarn = _.includes(files, 'yarn.lock');
     const packageManager = useYarn ? 'yarn' : 'npm';
-    exec('npm outdated iopipe', (e, stdout1 = '', stderr1 = '') => {
-      if (stderr1){
-        this.log('Could not finish upgrading IOpipe automatically.');
-        return true;
-      }
-      const arr = stdout1.split('\n');
-      const line2Arr = _.compact((arr[1] || '').split(' '));
-      const libName = line2Arr[0];
-      const wantedVersion = line2Arr[3];
-      if (libName === 'iopipe' && wantedVersion){
-        // set version to newer
-        this.package.dependencies.iopipe = wantedVersion;
-        // write package.json to file
-        fs.writeFileSync(join(this.prefix, 'package.json'), JSON.stringify(this.package, null, '  '));
-        exec(`${packageManager} install`, (e2, stdout2 = '', stderr2 = '') => {
-          if (useYarn && stdout2.match('success') || !useYarn && !stderr1){
-            return this.log(`Upgraded IOpipe to ${wantedVersion} automatically. 💪`);
-          }
-          this.log('Ran into an error attempting to upgrade IOpipe automatically.');
-          const err = stderr2 || stderr1 || 'Unknown error.';
-          return this.log(err);
-        });
-      } else if (!libName){
-        this.log('You have the latest IOpipe library. Nice work!');
-        return 'latest';
-      }
-      return this.log('Something went wrong trying to upgrade IOpipe automatically.');
+    debug(`Using pkg manager: ${packageManager}`);
+    return new Promise((resolve, reject) => {
+      exec('npm outdated iopipe', (err1, stdout1 = '', stderr1 = '') => {
+        if (stderr1 || err1){
+          this.log('Could not finish upgrading IOpipe automatically.');
+          return reject('err-npm-outdated');
+        }
+        const arr = stdout1.split('\n');
+        debug('From npm outdated command: ', arr);
+        const line2Arr = _.compact((arr[1] || '').split(' '));
+        const libName = line2Arr[0];
+        wantedVersion = targetVerison || line2Arr[3];
+        if ((libName === 'iopipe' && wantedVersion) || targetVerison){
+          // set version to newer
+          debug(`Attempting to upgrade to ${wantedVersion}`);
+          this.package.dependencies.iopipe = wantedVersion;
+          // write package.json to file
+          fs.writeFileSync(join(this.prefix, 'package.json'), JSON.stringify(this.package, null, '  '));
+          debug(`Executing ${packageManager} install`);
+          return exec(`${preCmd} && ${packageManager} install && echo $?`, (err2, stdout2 = '', stderr2 = '') => {
+            if (err2){
+              console.log(err2);
+              return reject(err2);
+            }
+            const exitCode = _.chain(stdout2)
+              .defaultTo('')
+              .split('\n')
+              .compact()
+              .last()
+              .value();
+            if (exitCode === '0'){
+              this.log(`Upgraded IOpipe to ${wantedVersion} automatically. 💪`);
+              return resolve(`success-upgrade-${packageManager}-${wantedVersion}`);
+            }
+            this.log('Ran into an error attempting to upgrade IOpipe automatically.');
+            const err = stderr2 || stderr1 || 'Unknown error.';
+            this.log('ok there is an err');
+            this.log(err);
+            return reject(`err-install-${packageManager}`);
+          });
+        } else if (!libName){
+          this.log('You have the latest IOpipe library. Nice work!');
+          return resolve(`success-no-upgrade-${packageManager}`);
+        }
+        this.log('Something went wrong trying to upgrade IOpipe automatically.');
+        return reject('err-unknown');
+      });
     });
   }
   getFuncs(){
@@ -176,20 +203,39 @@ class ServerlessIOpipePlugin {
           const key = arr[0];
           const obj = arr[1];
           const handlerArr = _.isString(obj.handler) ? obj.handler.split('.') : [];
-          const fileName = handlerArr.slice(0, -1).join('.');
-          const path = `${servicePath}/${fileName}.js`;
+          const relativePath = handlerArr.slice(0, -1).join('.');
+          const path = `${servicePath}/${relativePath}.js`;
           return _.assign({}, obj, {
             method: _.last(handlerArr),
             path,
             code: fs.readFileSync(path, 'utf8'),
             name: key,
-            fileName
+            relativePath
           });
         })
         .value();
     } catch (err){
       console.error('Failed to require functions.');
       throw new Error(err);
+    }
+  }
+  async setupFolder(){
+    const iopipeFolder = resolvePath(this.prefix, '.iopipe');
+    fs.removeSync(iopipeFolder);
+    const files = _.chain(this.prefix)
+      .thru(fs.readdirSync)
+      .difference(['node_modules', '.iopipe'])
+      .value();
+    fs.ensureDirSync(resolvePath(this.prefix, '.iopipe'));
+    const copy = pify(fs.copy);
+    try {
+      await Promise.all(files.map(file => {
+        return copy(resolvePath(this.prefix, file), resolvePath(this.prefix, '.iopipe/', file));
+      }));
+      fs.symlinkSync(resolvePath(this.prefix, 'node_modules'), resolvePath(this.prefix, '.iopipe/node_modules'));
+      this.sls.config.servicePath = join(this.originalServicePath, '.iopipe');
+    } catch (err){
+      this.log(err);
     }
   }
   transform(){
@@ -199,28 +245,9 @@ class ServerlessIOpipePlugin {
     }
     throw new Error('No functions to wrap iopipe with.');
   }
-  async setupFolder(){
-    const iopipeFolder = resolve(this.prefix, '.iopipe');
-    fs.removeSync(iopipeFolder);
-    const files = _.chain(this.prefix)
-      .thru(fs.readdirSync)
-      .difference(['node_modules', '.iopipe'])
-      .value();
-    fs.ensureDirSync(resolve(this.prefix, '.iopipe'));
-    const copy = pify(fs.copy);
-    try {
-      await Promise.all(files.map(file => {
-        return copy(resolve(this.prefix, file), resolve(this.prefix, '.iopipe/', file));
-      }));
-      fs.symlinkSync(resolve(this.prefix, 'node_modules'), resolve(this.prefix, '.iopipe/node_modules'));
-      this.sls.config.servicePath = join(this.originalServicePath, '.iopipe');
-    } catch (err){
-      this.log(err);
-    }
-  }
   operate(){
     this.funcs.forEach(f => {
-      fs.writeFileSync(join(this.sls.config.servicePath, f.fileName + '.js'), f.transformed);
+      fs.writeFileSync(join(this.sls.config.servicePath, f.relativePath + '.js'), f.transformed);
     });
   }
   finish(){

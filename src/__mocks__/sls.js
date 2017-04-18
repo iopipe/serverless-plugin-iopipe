@@ -1,3 +1,5 @@
+import path from 'path';
+
 /*eslint-disable quotes*/
 export default {
   "providers": {
@@ -299,7 +301,9 @@ export default {
         "name": "sls-iopipe-prod-excluded"
       }
     },
-    "package": {}
+    "package": {
+      "artifact": "example/.iopipe/.serverless/sls-iopoipe.zip"
+    }
   },
   "variables": {
     "serverless": "~",
@@ -1513,7 +1517,7 @@ export default {
     "serverless": "~",
     "serverlessPath": `${process.env.npm_config_prefix}/node_modules/serverless/lib`,
     "interactive": true,
-    "servicePath": process.env.npm_config_prefix
+    "servicePath": path.resolve(__dirname, '../../example')
   },
   "classes": {},
   "cli": {
