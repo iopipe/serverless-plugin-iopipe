@@ -220,6 +220,7 @@ class ServerlessIOpipePlugin {
     }
   }
   async setupFolder(){
+    const debug = createDebugger('setupFolder');
     const iopipeFolder = resolvePath(this.prefix, '.iopipe');
     fs.removeSync(iopipeFolder);
     fs.ensureDirSync(join(this.originalServicePath, '.serverless'));
@@ -227,6 +228,7 @@ class ServerlessIOpipePlugin {
       .thru(fs.readdirSync)
       .difference(['node_modules', '.iopipe'])
       .value();
+    debug('files to copy: ', JSON.stringify(files));
     fs.ensureDirSync(resolvePath(this.prefix, '.iopipe'));
     const copy = pify(fs.copy);
     try {

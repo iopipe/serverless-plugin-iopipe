@@ -159,7 +159,8 @@ test('Gets funcs', () => {
 test('Can setup .iopipe folder', async () => {
   await Plugin.setupFolder();
   const files = readdirSync(path.join(prefix, '.iopipe'));
-  expect(_.intersection(files, ['.serverless', 'handlers', 'package.json']).length === 3).toBeTruthy();
+  const req = ['.serverless', 'handlers', 'package.json'];
+  expect(_.intersection(files, req)).toEqual(expect.arrayContaining(req));
 });
 
 test('Transforms from plugin', async () => {
