@@ -6,6 +6,7 @@
 A [serverless](http://www.serverless.com) plugin to automatically wrap your functions with [iopipe](https://iopipe.com).
 
 # Requirements
+- AWS Lambda
 - Node >= `6.10`
 - NPM >= `3.0`
 - Yarn >= `0.22.0` (optional)

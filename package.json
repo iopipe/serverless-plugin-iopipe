@@ -74,5 +74,5 @@
     "sls": "npm run build && npm run build --prefix example",
     "test": "npm run eslint && npm run jest"
   },
-  "version": "0.0.1"
+  "version": "0.1.2"
 }
