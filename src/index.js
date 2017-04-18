@@ -222,6 +222,7 @@ class ServerlessIOpipePlugin {
   async setupFolder(){
     const iopipeFolder = resolvePath(this.prefix, '.iopipe');
     fs.removeSync(iopipeFolder);
+    fs.ensureDirSync(join(this.originalServicePath, '.serverless'));
     const files = _.chain(this.prefix)
       .thru(fs.readdirSync)
       .difference(['node_modules', '.iopipe'])
