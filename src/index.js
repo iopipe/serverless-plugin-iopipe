@@ -25,51 +25,7 @@ class ServerlessIOpipePlugin {
         usage: 'Automatically wraps your function handlers in IOpipe, so you don\'t have to.',
         lifecycleEvents: [
           'run'
-        ],
-        options: {
-          token: {
-            usage:
-              'Your iopipe token (clientId) to wrap your functions with',
-            required: false,
-            shortcut: 't'
-          },
-          quote: {
-            usage:
-              'Use "single" or "double" quotes in transformed output',
-            required: false,
-            shortcut: 'q'
-          },
-          noVerify: {
-            usage:
-              'Skip a check that ensures iopipe is installed via npm/yarn and present in package.json',
-            required: false,
-            shortcut: 'nv'
-          },
-          noUpgrade: {
-            usage:
-              'The plugin automatically upgrades the IOpipe library to the most recent minor version. Use this option to disable that feature.',
-            required: false,
-            shortcut: 'nu'
-          },
-          noYarn: {
-            usage:
-              'When auto-upgrading, Yarn will be used in place of NPM if a yarn.lock file is found. Use this flag disable yarn and use NPM to upgrade the iopipe library.',
-            required: false,
-            shortcut: 'ny'
-          },
-          exclude: {
-            usage:
-              'Exclude certain handlers from being wrapped with IOpipe',
-            required: false,
-            shortcut: 'e'
-          },
-          placeholder: {
-            usage:
-              'Use process.env.IOPIPE_TOKEN as a placeholder variable to allow the token to be configured via environment variables in Serverless, AWS CLI, or AWS Console',
-            required: false,
-            shortcut: 'p'
-          }
-        }
+        ]
       }
     };
     this.hooks = {
