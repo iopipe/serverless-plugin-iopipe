@@ -35,3 +35,6 @@ functions:
     handler: handlers/excluded.handler
   es5Named:
     handler: handlers/es5Named.handler
+  python:
+    handler: python/main.longRunning
+    runtime: python2.7

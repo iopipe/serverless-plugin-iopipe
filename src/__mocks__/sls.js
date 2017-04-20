@@ -299,6 +299,10 @@ export default {
         "handler": "handlers/excluded.handler",
         "events": [],
         "name": "sls-iopipe-prod-excluded"
+      },
+      "python": {
+        "handler": "python/main.longRunning",
+        "runtime": "python2.7"
       }
     },
     "package": {

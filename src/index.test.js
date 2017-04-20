@@ -167,12 +167,15 @@ test('Upgrades lib with npm', async () => {
 
 test('Gets funcs', () => {
   expect(Plugin.funcs).toEqual(expect.arrayContaining([]));
+  expect(sls.service.functions.python.runtime).toEqual('python2.7');
   Plugin.getFuncs();
-  const first = _.head(Plugin.funcs);
+  expect(_.find(Plugin.funcs, f => f.name === 'python')).toBeUndefined();
+  const simple = _.find(Plugin.funcs, f => f.name === 'simple');
+  expect(simple).toBeDefined();
   ['handler', 'name', 'method', 'path', 'relativePath'].forEach(str => {
-    expect(first).toHaveProperty(str);
+    expect(simple).toHaveProperty(str);
   });
-  expect(first.code).toMatchSnapshot();
+  expect(simple.code).toMatchSnapshot();
 });
 
 test('Can setup .iopipe folder', async () => {

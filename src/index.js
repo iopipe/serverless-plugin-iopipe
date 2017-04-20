@@ -176,6 +176,16 @@ class ServerlessIOpipePlugin {
       this.funcs = _.chain(this.sls.service.functions)
         .omit(options().exclude)
         .toPairs()
+        //filter out functions that are not Node.js
+        .reject(arr => {
+          const key = arr[0];
+          const obj = arr[1];
+          if (_.isString(obj.runtime) && !obj.runtime.match('node')){
+            this.log(`Function "${key}" is not Node.js. Currently the plugin only supports Node.js functions. Skipping ${key}.`);
+            return true;
+          }
+          return false;
+        })
         .map(arr => {
           const key = arr[0];
           const obj = arr[1];
@@ -231,7 +241,7 @@ class ServerlessIOpipePlugin {
     });
   }
   finish(){
-    this.log('Successfully wrapped functions with IOpipe, cleaning up.');
+    this.log('Successfully wrapped Node.js functions with IOpipe, cleaning up.');
     fs.copySync(
       join(this.originalServicePath, '.iopipe', '.serverless'),
       join(this.originalServicePath, '.serverless')
