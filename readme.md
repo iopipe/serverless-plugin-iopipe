@@ -58,7 +58,7 @@ Skip a check that ensures iopipe is installed via npm/yarn and present in packag
 
 #### `iopipeNoUpgrade` (optional)
 
-The plugin automatically upgrades the IOpipe library to the most recent minor version. Use this option to disable that feature.
+The plugin automatically upgrades the IOpipe library to the latest available version that satisfies the semver range specified in package.json. Use this option to disable that feature.
 
 #### `iopipeNoYarn` (optional)
 

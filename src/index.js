@@ -132,7 +132,7 @@ class ServerlessIOpipePlugin {
         debug('From npm outdated command: ', arr);
         const line2Arr = _.compact((arr[1] || '').split(' '));
         const libName = line2Arr[0];
-        wantedVersion = targetVerison || line2Arr[3];
+        wantedVersion = targetVerison || line2Arr[2];
         if ((libName === 'iopipe' && wantedVersion) || targetVerison){
           // set version to newer
           debug(`Attempting to upgrade to ${wantedVersion}`);
