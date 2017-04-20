@@ -22,7 +22,7 @@ function hasIOpipe(code){
 
 function wrap(node){
   const token = options().placeholder ? 'process.env.IOPIPE_TOKEN' : `\'${options().token || 'DEFAULT_TOKEN'}\'`;
-  const str = `require('iopipe')({clientId: ${token}})(REPLACE)`;
+  const str = `require('iopipe')({clientId: ${token}, source: 'plugin-sls'})(REPLACE)`;
   return j(str)
     .find(j.Identifier, {
       name: 'REPLACE'

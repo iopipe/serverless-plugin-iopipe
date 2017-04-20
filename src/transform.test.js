@@ -21,6 +21,35 @@ test('es5.js transformed matches screenshot', () => {
   expect(next.transformed).toMatchSnapshot();
 });
 
+test('es5 transformed code works', () => {
+  const next = transform({code: files.es5});
+  global.transformCodeResult = undefined;
+  const preCode = `
+    const require = function(str){
+      return global[str];
+    };
+    global.finished = (err, result) => {
+      global.transformCodeResult = err || result;
+    }
+    global.iopipe = (opts) => {
+      return (fn) => {
+        return (event, context) => {
+          return fn(event, context, global.finished);
+        }
+      }
+    };
+  `;
+  const afterCode = `
+    module.exports.handler();
+  `;
+  const compiled = preCode + next.transformed + afterCode;
+  /*eslint-disable no-eval*/
+  eval(compiled);
+  /*eslint-enable no-eval*/
+  expect(global.transformCodeResult).toHaveProperty('statusCode');
+  expect(global.transformCodeResult.statusCode).toEqual(200);
+});
+
 test('es5Named.js transformed matches screenshot', () => {
   const next = transform({code: files.es5Named});
   expect(next.transformed).toMatchSnapshot();
@@ -41,7 +70,9 @@ test('simple.js transformed matches screenshot', () => {
   expect(next.transformed).toMatchSnapshot();
 });
 
+
 test('hasLib.js transformed matches screenshot', () => {
   const next = transform({code: files.hasLib});
   expect(next.transformed).toMatchSnapshot();
 });
+

@@ -19,7 +19,7 @@ module.exports.handler = (event, context, callback) => {
 exports[`Saves transformed files to .iopipe folder 1`] = `
 "const uuid = require('uuid');
 
-module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN'})((event, context, callback) => {
+module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', source: 'plugin-sls'})((event, context, callback) => {
   const response = {
     statusCode: 200,
     body: JSON.stringify({
@@ -35,7 +35,7 @@ module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN'})((event, 
 exports[`Transforms from plugin 1`] = `
 "const uuid = require('uuid');
 
-module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN'})((event, context, callback) => {
+module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', source: 'plugin-sls'})((event, context, callback) => {
   const response = {
     statusCode: 200,
     body: JSON.stringify({
