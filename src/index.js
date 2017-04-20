@@ -51,6 +51,7 @@ class ServerlessIOpipePlugin {
   async run(){
     this.log('Wrapping your functions with IO|...');
     this.setPackage();
+    this.checkForLocalPlugin();
     this.checkForLib();
     this.checkToken();
     this.upgradeLib();
@@ -79,6 +80,19 @@ class ServerlessIOpipePlugin {
       })
       .value();
     options(_.defaults(opts, custom));
+  }
+  checkForLocalPlugin(){
+    const found = _.chain(join(this.prefix, 'node_modules'))
+      .thru(fs.readdirSync)
+      .includes('serverless-plugin-iopipe')
+      .value();
+    if (found){
+      if (!options().preferLocal){
+        throw new Error('Found a folder named serverless-plugin-iopipe in node_modules. If you installed the plugin without the --global flag, your bundle size will be quite large as a result. If you are sure you want to do this, set iopipePreferLocal to true.');
+      }
+      return 'found-prefer-local';
+    }
+    return 'not-found';
   }
   checkForLib(pack = this.package){
     const {dependencies} = pack;

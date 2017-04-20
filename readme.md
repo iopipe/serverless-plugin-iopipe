@@ -17,13 +17,13 @@ A [serverless](http://www.serverless.com) plugin to automatically wrap your func
 With [yarn](https://yarnpkg.com) (recommended):
 ```
 yarn add iopipe
-yarn add serverless-plugin-iopipe --dev
+yarn global add serverless-plugin-iopipe
 ```
 
 With npm:
 ```
 npm install iopipe
-npm install serverless-plugin-iopipe --save-dev
+npm install serverless-plugin-iopipe -g
 ```
 
 Add the plugin to your `serverless.yml` file:
@@ -71,6 +71,10 @@ Exclude certain functions from the plugin. Comma separated string.
 #### `iopipePlaceholder` (optional)
 
 Use `process.env.IOPIPE_TOKEN` as a placeholder variable to allow the token to be configured via environment variables in Serverless, AWS CLI, or AWS Console instead of embedding the token string directly.
+
+#### `iopipePreferLocal` (optional)
+
+It's highly recommended you install this plugin globally instead of per-project. If installed locally, your Serverless bundle may be much larger than you'd like. However, if you're sure you want to use a local copy of serverless-plugin-iopipe, use this option to skip the global check.
 
 ## Known Issues
 - This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.

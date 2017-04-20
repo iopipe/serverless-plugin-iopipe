@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {copySync, renameSync, removeSync, readdirSync, readFileSync} from 'fs-extra';
+import {copySync, renameSync, removeSync, readdirSync, readFileSync, ensureDirSync} from 'fs-extra';
 import path from 'path';
 
 import ServerlessPlugin from './index';
@@ -61,6 +61,25 @@ test('Package is set via Plugin', () => {
   expect(Plugin.package.dependencies).not.toBeDefined();
   Plugin.setPackage();
   expect(Plugin.package.dependencies).toBeDefined();
+});
+
+test('Throws err when plugin is installed locally', () => {
+  let targetErr = undefined;
+  const folderPath = path.resolve(prefix, 'node_modules/serverless-plugin-iopipe');
+  ensureDirSync(folderPath);
+  try {
+    Plugin.checkForLocalPlugin();
+  } catch (err){
+    targetErr = err;
+  }
+  expect(targetErr).toBeDefined();
+  expect(targetErr).toBeInstanceOf(Error);
+  opts = options({preferLocal: true});
+  const result = Plugin.checkForLocalPlugin();
+  expect(result).toBe('found-prefer-local');
+  removeSync(folderPath);
+  const notFound = Plugin.checkForLocalPlugin();
+  expect(notFound).toBe('not-found');
 });
 
 test('Can check for lib, all is well', () => {
