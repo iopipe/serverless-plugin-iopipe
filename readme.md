@@ -7,8 +7,8 @@ A [serverless](http://www.serverless.com) plugin to automatically wrap your func
 
 # Requirements
 - AWS Lambda
-- Node >= `6.10`
-- NPM >= `3.0`
+- Node >= `4.3.2`
+- NPM >= `2.14.12`
 - Yarn >= `0.22.0` (optional)
 - A valid `package.json` file
 - A valid `serverless.yml` file
