@@ -8,7 +8,7 @@ import {createHash} from 'crypto';
 import options from '../options';
 
 let userId = undefined;
-export let visitor = undefined;
+let visitor = undefined;
 
 export function set(instance){
   // create consistent, yet anonymized id for usage stats
@@ -22,8 +22,11 @@ export function set(instance){
 }
 
 export function track(obj = {}){
+  if (!visitor){
+    return 'no-visitor';
+  }
   if (options().noStats){
-    return Promise.resolve('no-stats');
+    return 'no-stats';
   }
   const {
     category = 'event',
