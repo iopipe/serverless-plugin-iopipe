@@ -5,6 +5,7 @@ import path from 'path';
 import ServerlessPlugin from './index';
 import sls from './__mocks__/sls';
 import options from './options';
+import {visitor, track} from 'util/track';
 
 let Plugin = undefined;
 let opts = options();
@@ -20,6 +21,10 @@ test('Options are set with defaults', () => {
   expect(opts).toBeDefined();
   expect(opts).toHaveProperty('quote');
   expect(opts.noVerify).toBeUndefined();
+});
+
+test('Track visitor is undefined', () => {
+  expect(visitor).toBeUndefined();
 });
 
 test('Can instantiate main class', () => {
@@ -54,6 +59,22 @@ test('Options can be overridden', () => {
   opts = options({token: 'WOW_FUN_TOKEN'});
   expect(opts.token).toEqual('WOW_FUN_TOKEN');
   expect(opts.exclude).toContain('excluded');
+});
+
+test('Track visitor is set', () => {
+  expect(visitor).toBeDefined();
+  expect(visitor.event).toBeInstanceOf(Function);
+});
+
+test('Tracking works', async () => {
+  const res = await track({action: 'dummy-test-action'});
+  expect(res).toEqual(1);
+});
+
+test('Tracking noops when noStats is set', async () => {
+  opts = options({noStats: true});
+  const res = await track({action: 'dummy-test-action'});
+  expect(res).toEqual('no-stats');
 });
 
 test('Package is set via Plugin', () => {

@@ -8,7 +8,9 @@
     "fs-extra": "^2.1.2",
     "jscodeshift": "^0.3.30",
     "lodash": "^4.17.4",
-    "pify": "^2.3.0"
+    "pify": "^2.3.0",
+    "universal-analytics": "^0.4.13",
+    "uuid": "^3.0.1"
   },
   "description": "Serverless Plugin IOpipe",
   "devDependencies": {

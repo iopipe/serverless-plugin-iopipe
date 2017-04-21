@@ -75,6 +75,10 @@ Use `process.env.IOPIPE_TOKEN` as a placeholder variable to allow the token to b
 
 It's highly recommended you install this plugin globally instead of per-project. If installed locally, your Serverless bundle may be much larger than you'd like. However, if you're sure you want to use a local copy of serverless-plugin-iopipe, use this option to skip the global check.
 
+#### `iopipeNoStats` (optional)
+
+By default, the plugin sends _anonymized_, non-identifying usage statistics to Google Analytics. IOpipe will use this info to prioritize updates and enhancements to the plugin. If you'd like to opt out of this, just set this option.
+
 ## Known Issues
 - This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
 - If your `package.json` is located in a non-standard place, auto-upgrading may not work.

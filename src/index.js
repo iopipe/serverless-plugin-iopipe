@@ -8,6 +8,9 @@ import {default as debugLib} from 'debug';
 import transform from './transform';
 import options from './options';
 
+import {set as trackSet, track} from 'util/track';
+import hrMillis from 'util/hrMillis';
+
 function createDebugger(suffix){
   return debugLib(`serverless-plugin-iopipe:${suffix}`);
 }
@@ -16,9 +19,10 @@ class ServerlessIOpipePlugin {
   constructor(sls = {}, opts) {
     this.sls = sls;
     this.setOptions(opts);
+    this.prefix = opts.prefix || this.sls.config.servicePath || process.env.npm_config_prefix;
+    trackSet(this);
     this.package = {};
     this.funcs = [];
-    this.prefix = opts.prefix || this.sls.config.servicePath || process.env.npm_config_prefix;
     this.originalServicePath = this.sls.config.servicePath;
     this.commands = {
       iopipe: {
@@ -49,6 +53,10 @@ class ServerlessIOpipePlugin {
     }
   }
   async run(){
+    const start = process.hrtime();
+    track({
+      action: 'run-start'
+    });
     this.log('Wrapping your functions with IO|...');
     this.setPackage();
     this.checkForLocalPlugin();
@@ -59,10 +67,14 @@ class ServerlessIOpipePlugin {
     await this.setupFolder();
     this.transform();
     this.operate();
+    track({
+      action: 'run-finish',
+      value: hrMillis(start)
+    });
   }
   setPackage(){
     try {
-      this.package = JSON.parse(fs.readFileSync(join(this.prefix, 'package.json')));
+      this.package = fs.readJsonSync(join(this.prefix, 'package.json'));
     } catch (err){
       this.package = {};
     }
@@ -79,7 +91,12 @@ class ServerlessIOpipePlugin {
         return val;
       })
       .value();
-    options(_.defaults(opts, custom));
+    const val = _.defaults(opts, custom);
+    track({
+      action: 'options-set',
+      value: val
+    });
+    options(val);
   }
   checkForLocalPlugin(){
     const found = _.chain(join(this.prefix, 'node_modules'))
@@ -88,6 +105,9 @@ class ServerlessIOpipePlugin {
       .value();
     if (found){
       if (!options().preferLocal){
+        track({
+          action: 'plugin-installed-locally'
+        });
         throw new Error('Found a folder named serverless-plugin-iopipe in node_modules. If you installed the plugin without the --global flag, your bundle size will be quite large as a result. If you are sure you want to do this, set iopipePreferLocal to true.');
       }
       return 'found-prefer-local';
@@ -97,6 +117,9 @@ class ServerlessIOpipePlugin {
   checkForLib(pack = this.package){
     const {dependencies} = pack;
     if (_.isEmpty(pack) || !_.isPlainObject(pack)){
+      track({
+        action: 'no-package-skip-lib-check'
+      });
       this.log('No package.json found, skipping lib check.');
       return 'no-package-skip';
     } else if (_.isPlainObject(pack) && !dependencies.iopipe){
@@ -104,6 +127,9 @@ class ServerlessIOpipePlugin {
         this.log('Skipping iopipe module installation check.');
         return 'no-verify-skip';
       }
+      track({
+        action: 'lib-not-found'
+      });
       throw new Error('IOpipe module not found in package.json. Make sure to install it via npm or yarn, or use the --noVerify option for serverless-plugin-iopipe.');
     }
     return true;
@@ -111,6 +137,9 @@ class ServerlessIOpipePlugin {
   checkToken(){
     const token = options().token;
     if (!token){
+      track({
+        action: 'token-missing'
+      });
       throw new Error('No iopipe token found. Specify "iopipeToken" in the "custom" object in serverless.yml.');
     }
     return true;
@@ -122,10 +151,18 @@ class ServerlessIOpipePlugin {
     const useYarn = _.includes(files, 'yarn.lock');
     const packageManager = useYarn ? 'yarn' : 'npm';
     debug(`Using pkg manager: ${packageManager}`);
+    track({
+      action: 'lib-upgrade',
+      label: packageManager
+    });
     return new Promise((resolve, reject) => {
       exec('npm outdated iopipe', (err1, stdout1 = '', stderr1 = '') => {
         if (stderr1 || err1){
           this.log('Could not finish upgrading IOpipe automatically.');
+          track({
+            action: 'npm-outdated-error',
+            value: stderr1 || err1
+          });
           return reject('err-npm-outdated');
         }
         const arr = stdout1.split('\n');
@@ -152,13 +189,20 @@ class ServerlessIOpipePlugin {
               .last()
               .value();
             if (exitCode === '0'){
+              track({
+                action: 'lib-upgrade-success',
+                value: stderr1 || err1
+              });
               this.log(`Upgraded IOpipe to ${wantedVersion} automatically. 💪`);
               return resolve(`success-upgrade-${packageManager}-${wantedVersion}`);
             }
             this.log('Ran into an error attempting to upgrade IOpipe automatically.');
             const err = stderr2 || stderr1 || 'Unknown error.';
-            this.log('ok there is an err');
             this.log(err);
+            track({
+              action: 'lib-upgrade-error',
+              value: err
+            });
             return reject(`err-install-${packageManager}`);
           });
         } else if (!libName){
@@ -166,6 +210,10 @@ class ServerlessIOpipePlugin {
           return resolve(`success-no-upgrade-${packageManager}`);
         }
         this.log('Something went wrong trying to upgrade IOpipe automatically.');
+        track({
+          action: 'lib-upgrade-error',
+          value: 'unknown'
+        });
         return reject('err-unknown');
       });
     });
@@ -201,7 +249,15 @@ class ServerlessIOpipePlugin {
           });
         })
         .value();
+      track({
+        action: 'funcs-count',
+        value: this.funcs.length
+      });
     } catch (err){
+      track({
+        action: 'get-funcs-fail',
+        value: err
+      });
       console.error('Failed to require functions.');
       throw new Error(err);
     }
@@ -249,6 +305,9 @@ class ServerlessIOpipePlugin {
     this.sls.service.package.artifact = join(this.originalServicePath, '.serverless', basename(this.sls.service.package.artifact));
     this.sls.config.servicePath = this.originalServicePath;
     fs.removeSync(join(this.originalServicePath, '.iopipe'));
+    track({
+      action: 'finish'
+    });
   }
 }
 
