@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`es5.js transformed matches screenshot 1`] = `
-"module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', source: 'plugin-sls'})(function(event, context, callback){
+"module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', installMethod: 'plugin-sls'})(function(event, context, callback){
   const response = {
     statusCode: 200,
     body: JSON.stringify({
@@ -15,7 +15,7 @@ exports[`es5.js transformed matches screenshot 1`] = `
 `;
 
 exports[`es5Named.js transformed matches screenshot 1`] = `
-"module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', source: 'plugin-sls'})(function handle(event, context, callback){
+"module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', installMethod: 'plugin-sls'})(function handle(event, context, callback){
   const response = {
     statusCode: 200,
     body: JSON.stringify({
@@ -56,7 +56,7 @@ exports[`multiple.js transformed matches screenshot 1`] = `
   callback(null, response);
 };
 
-module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', source: 'plugin-sls'})((event, context, callback) => {
+module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', installMethod: 'plugin-sls'})((event, context, callback) => {
   const response = {
     statusCode: 200,
     body: JSON.stringify({
@@ -70,7 +70,7 @@ module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', source: '
 `;
 
 exports[`noModule.js transformed matches screenshot 1`] = `
-"exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', source: 'plugin-sls'})((event, context, callback) => {
+"exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', installMethod: 'plugin-sls'})((event, context, callback) => {
   const response = {
     statusCode: 200,
     body: JSON.stringify({
@@ -86,7 +86,7 @@ exports[`noModule.js transformed matches screenshot 1`] = `
 exports[`simple.js transformed matches screenshot 1`] = `
 "const uuid = require('uuid');
 
-module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', source: 'plugin-sls'})((event, context, callback) => {
+module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', installMethod: 'plugin-sls'})((event, context, callback) => {
   const response = {
     statusCode: 200,
     body: JSON.stringify({
