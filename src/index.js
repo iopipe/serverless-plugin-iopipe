@@ -33,8 +33,8 @@ class ServerlessIOpipePlugin {
       }
     };
     this.hooks = {
-      'before:deploy:createDeploymentArtifacts': this.run.bind(this),
-      'after:deploy:createDeploymentArtifacts': this.finish.bind(this),
+      'before:package:createDeploymentArtifacts': this.run.bind(this),
+      'after:package:createDeploymentArtifacts': this.finish.bind(this),
       'iopipe:run': this.greeting.bind(this)
     };
   }
