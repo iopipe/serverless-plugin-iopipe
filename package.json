@@ -26,7 +26,7 @@
     "eslint-plugin-jest": "^19.0.1",
     "jest": "^19.0.2",
     "pre-commit": "^1.2.2",
-    "serverless": "^1.8.0"
+    "serverless": "^1.13.1"
   },
   "engines": {
     "node": ">=6.10.0"
@@ -74,5 +74,5 @@
     "sls": "npm run build && npm run build --prefix example",
     "test": "npm run eslint && npm run jest"
   },
-  "version": "0.1.12"
+  "version": "0.1.13"
 }

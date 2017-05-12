@@ -3032,13 +3032,19 @@ locate-path@^2.0.0:
     p-locate "^2.0.0"
     path-exists "^3.0.0"
 
+lodash-deep@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/lodash-deep/-/lodash-deep-2.0.0.tgz#ca958f5bcdb3d68d3ec37acdf1c58c1ccbd8865c"
+  dependencies:
+    lodash ">=3.7.0"
+
+lodash@>=3.7.0, lodash@^4.0.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.3.0, lodash@^4.8.0:
+  version "4.17.4"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
+
 lodash@^3.10.0, lodash@^3.9.3:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
-
-lodash@^4.0.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.3.0, lodash@^4.8.0:
-  version "4.17.4"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
 longest@^1.0.1:
   version "1.0.1"
@@ -3726,13 +3732,13 @@ right-align@^0.1.1:
   dependencies:
     align-text "^0.1.1"
 
-rimraf@2, rimraf@^2.4.4, rimraf@^2.5.1, rimraf@^2.6.1:
+rimraf@2, rimraf@^2.2.8, rimraf@^2.4.4, rimraf@^2.5.1, rimraf@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.1.tgz#c2338ec643df7a1b7fe5c54fa86f57428a55f33d"
   dependencies:
     glob "^7.0.5"
 
-rimraf@^2.2.8, rimraf@~2.2.6:
+rimraf@~2.2.6:
   version "2.2.8"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.2.8.tgz#e439be2aaee327321952730f99a8929e4fc50582"
 
@@ -3784,15 +3790,16 @@ semver@~5.0.1:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.0.3.tgz#77466de589cd5d3c95f138aa78bc569a3cb5d27a"
 
-serverless@^1.8.0:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/serverless/-/serverless-1.11.0.tgz#bb87e11b334ded5249a93b6827704daa885d280c"
+serverless@^1.13.1:
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/serverless/-/serverless-1.13.1.tgz#a79acf677e7dc46eb3cd17f134ff70435976e1ea"
   dependencies:
     archiver "^1.1.0"
     async "^1.5.2"
     aws-sdk "^2.7.13"
     bluebird "^3.4.0"
     chalk "^1.1.1"
+    ci-info "^1.0.0"
     download "^5.0.2"
     filesize "^3.3.0"
     fs-extra "^0.26.7"
@@ -3802,6 +3809,7 @@ serverless@^1.8.0:
     js-yaml "^3.6.1"
     json-refs "^2.1.5"
     lodash "^4.13.1"
+    lodash-deep "^2.0.0"
     minimist "^1.2.0"
     moment "^2.13.0"
     node-fetch "^1.5.3"
@@ -3810,7 +3818,6 @@ serverless@^1.8.0:
     semver "^5.0.3"
     semver-regex "^1.0.0"
     shelljs "^0.6.0"
-    traverse "^0.6.6"
     uuid "^2.0.2"
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
@@ -4161,10 +4168,6 @@ tough-cookie@^2.3.2, tough-cookie@~2.3.0:
 tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
-
-traverse@^0.6.6:
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.6.6.tgz#cbdf560fd7b9af632502fed40f918c157ea97137"
 
 trim-repeated@^1.0.0:
   version "1.0.0"
