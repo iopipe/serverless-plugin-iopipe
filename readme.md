@@ -14,16 +14,18 @@ A [serverless](http://www.serverless.com) plugin to automatically wrap your func
 - A valid `serverless.yml` file
 
 # Install
-With [yarn](https://yarnpkg.com) (recommended):
+With [yarn](https://yarnpkg.com) (recommended) in project directory:
 ```
 yarn add iopipe
-yarn global add serverless-plugin-iopipe
+npm install serverless-plugin-iopipe -g
+npm link serverless-plugin-iopipe
 ```
 
-With npm:
+With npm in project directory:
 ```
 npm install iopipe
 npm install serverless-plugin-iopipe -g
+npm link serverless-plugin-iopipe
 ```
 
 Add the plugin to your `serverless.yml` file:
@@ -79,6 +81,9 @@ It's highly recommended you install this plugin globally instead of per-project.
 #### `iopipeNoStats` (optional)
 
 By default, the plugin sends _anonymized_, non-identifying usage statistics to Google Analytics. IOpipe will use this info to prioritize updates and enhancements to the plugin. If you'd like to opt out of this, just set this option.
+
+## FAQ
+- Why `npm link`? In order to keep your serverless package size down, it's recommended that you install the package globally. But due to the nature of module resolution, the Serverless Framework needs to reference a project-based copy of the plugin. `npm link` solves this issue by simply creating a symlink from your project directory to the global node_modules directory.
 
 ## Known Issues
 - This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
