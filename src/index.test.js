@@ -83,8 +83,14 @@ test('Package is set via Plugin', () => {
 
 test('Throws err when plugin is installed locally', async () => {
   let targetErr = undefined;
-  await new Promise(resolve => {
-    return exec('cd example && npm install serverless-plugin-iopipe', resolve);
+  await new Promise((resolve, reject) => {
+    return exec('cd example && npm install serverless-plugin-iopipe', (err, stdout = '', stderr = '') => {
+      if (err || stderr){
+        console.log(err, stderr);
+        return stderr && !err ? resolve() : reject();
+      }
+      return resolve();
+    });
   });
   try {
     Plugin.setPackage();
@@ -97,8 +103,14 @@ test('Throws err when plugin is installed locally', async () => {
   opts = options({preferLocal: true});
   const result = Plugin.checkForLocalPlugin();
   expect(result).toBe('found-prefer-local');
-  await new Promise(resolve => {
-    return exec('cd example && npm uninstall serverless-plugin-iopipe', resolve);
+  await new Promise((resolve, reject) => {
+    return exec('cd example && npm uninstall serverless-plugin-iopipe', (err, stdout = '', stderr = '') => {
+      if (err || stderr){
+        console.log(err, stderr);
+        return stderr && !err ? resolve() : reject();
+      }
+      return resolve();
+    });
   });
   Plugin.setPackage();
   const notFound = Plugin.checkForLocalPlugin();
@@ -145,7 +157,14 @@ test('Throws error if iopipe token is not found', () => {
   expect(targetErr.message).toMatch(/iopipe token found/);
 });
 
+test('Does not upgrade if noUpgrade option is set', async () => {
+  opts = options({noUpgrade: true});
+  const result = await Plugin.upgradeLib();
+  expect(result).toBe('no-upgrade');
+});
+
 test('Uses npm if no yarn.lock (no upgrade needed)', async () => {
+  opts = options({noUpgrade: false});
   renameSync(path.resolve(prefix, 'yarn.lock'), path.resolve(prefix, 'yarn1.lock'));
   const upgradeResult = await Plugin.upgradeLib();
   expect(upgradeResult).toBe('success-no-upgrade-npm');

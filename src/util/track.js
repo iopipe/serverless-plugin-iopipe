@@ -4,11 +4,14 @@ import _ from 'lodash';
 import {join} from 'path';
 import uuid from 'uuid';
 import {createHash} from 'crypto';
+import {default as debugLib} from 'debug';
 
 import options from '../options';
 
 let userId = undefined;
 let visitor = undefined;
+
+const debug = debugLib('serverless-plugin-iopipe:track');
 
 export function set(instance){
   // create consistent, yet anonymized id for usage stats
@@ -23,10 +26,10 @@ export function set(instance){
 
 export function track(obj = {}){
   if (!visitor){
-    return 'no-visitor';
+    return Promise.resolve('no-visitor');
   }
   if (options().noStats){
-    return 'no-stats';
+    return Promise.resolve('no-stats');
   }
   const {
     category = 'event',
@@ -35,6 +38,7 @@ export function track(obj = {}){
     value
   } = obj;
   const newLabel = _.isString(label) ? label : JSON.stringify(label);
+  debug(`Tracking ${category}: ${action}`);
   return new Promise((resolve, reject) => {
     visitor.event(category, action, newLabel, value, (err, res) => {
       return err ? reject(err) : resolve(res);
