@@ -99,16 +99,13 @@ class ServerlessIOpipePlugin {
     options(val);
   }
   checkForLocalPlugin(){
-    const found = _.chain(join(this.prefix, 'node_modules'))
-      .thru(fs.readdirSync)
-      .includes('serverless-plugin-iopipe')
-      .value();
-    if (found){
+    const {dependencies, devDependencies} = this.package;
+    if (dependencies['serverless-plugin-iopipe'] || devDependencies['serverless-plugin-iopipe']){
       if (!options().preferLocal){
         track({
           action: 'plugin-installed-locally'
         });
-        throw new Error('Found a folder named serverless-plugin-iopipe in node_modules. If you installed the plugin without the --global flag, your bundle size will be quite large as a result. If you are sure you want to do this, set iopipePreferLocal to true.');
+        throw new Error('It looks as if you installed the serverless-iopipe-plugin without the global flag and running npm link. As a result, your packaged bundle size may be quite large. If you are sure you want to do this, set iopipePreferLocal to true.');
       }
       return 'found-prefer-local';
     }
@@ -269,7 +266,7 @@ class ServerlessIOpipePlugin {
     fs.ensureDirSync(join(this.originalServicePath, '.serverless'));
     const files = _.chain(this.prefix)
       .thru(fs.readdirSync)
-      .difference(['node_modules', '.iopipe'])
+      .difference(['.iopipe'])
       .value();
     debug('files to copy: ', JSON.stringify(files));
     fs.ensureDirSync(resolvePath(this.prefix, '.iopipe'));
@@ -278,7 +275,13 @@ class ServerlessIOpipePlugin {
       await Promise.all(files.map(file => {
         return copy(resolvePath(this.prefix, file), resolvePath(this.prefix, '.iopipe/', file));
       }));
-      fs.symlinkSync(resolvePath(this.prefix, 'node_modules'), resolvePath(this.prefix, '.iopipe/node_modules'));
+      try {
+        const target = resolvePath(this.prefix, '.iopipe', 'node_modules/serverless-plugin-iopipe');
+        fs.removeSync(target);
+        fs.unlinkSync(target);
+      } catch (err){
+        _.noop();
+      }
       this.sls.config.servicePath = join(this.originalServicePath, '.iopipe');
     } catch (err){
       this.log(err);
