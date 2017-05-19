@@ -142,6 +142,9 @@ class ServerlessIOpipePlugin {
     return true;
   }
   upgradeLib(targetVerison, preCmd = 'echo Installing.'){
+    if (options().noUpgrade){
+      return 'no-upgrade';
+    }
     const debug = createDebugger('upgrade');
     let wantedVersion = targetVerison;
     const files = fs.readdirSync(this.prefix);
@@ -153,18 +156,19 @@ class ServerlessIOpipePlugin {
       label: packageManager
     });
     return new Promise((resolve, reject) => {
-      exec('npm outdated iopipe', (err1, stdout1 = '', stderr1 = '') => {
+      exec(`${packageManager} outdated iopipe`, (err1, stdout1 = '', stderr1 = '') => {
         if (stderr1 || err1){
           this.log('Could not finish upgrading IOpipe automatically.');
+          debug(`Err from ${packageManager} outdated:`, stderr1 || err1);
           track({
-            action: 'npm-outdated-error',
+            action: `${packageManager}-outdated-error`,
             value: stderr1 || err1
           });
           return reject('err-npm-outdated');
         }
         const arr = stdout1.split('\n');
-        debug('From npm outdated command: ', arr);
-        const line2Arr = _.compact((arr[1] || '').split(' '));
+        debug(`From ${packageManager} outdated command: `, arr);
+        const line2Arr = _.compact((arr[packageManager === 'yarn' ? 2 : 1] || '').split(' '));
         const libName = line2Arr[0];
         wantedVersion = targetVerison || line2Arr[2];
         if ((libName === 'iopipe' && wantedVersion) || targetVerison){
@@ -268,15 +272,16 @@ class ServerlessIOpipePlugin {
       .thru(fs.readdirSync)
       .difference(['.iopipe'])
       .value();
-    debug('files to copy: ', JSON.stringify(files));
     fs.ensureDirSync(resolvePath(this.prefix, '.iopipe'));
     const copy = pify(fs.copy);
+    debug('Copying all source files to .iopipe folder');
     try {
       await Promise.all(files.map(file => {
         return copy(resolvePath(this.prefix, file), resolvePath(this.prefix, '.iopipe/', file));
       }));
       try {
         const target = resolvePath(this.prefix, '.iopipe', 'node_modules/serverless-plugin-iopipe');
+        debug('Removing serverless-plugin-iopipe from node_modules if found.');
         fs.removeSync(target);
         fs.unlinkSync(target);
       } catch (err){
@@ -300,17 +305,21 @@ class ServerlessIOpipePlugin {
     });
   }
   finish(){
+    const debug = createDebugger('finish');
     this.log('Successfully wrapped Node.js functions with IOpipe, cleaning up.');
+    debug('Copying .iopipe files back to .serverless');
     fs.copySync(
       join(this.originalServicePath, '.iopipe', '.serverless'),
       join(this.originalServicePath, '.serverless')
     );
+    debug('Assigning package artifact');
     this.sls.service.package.artifact = join(this.originalServicePath, '.serverless', basename(this.sls.service.package.artifact));
     this.sls.config.servicePath = this.originalServicePath;
+    debug('Removing .iopipe folder');
     fs.removeSync(join(this.originalServicePath, '.iopipe'));
     track({
       action: 'finish'
-    });
+    }).then(_.noop).catch(debug);
   }
 }
 
