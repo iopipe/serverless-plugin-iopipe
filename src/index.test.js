@@ -83,6 +83,7 @@ test('Package is set via Plugin', () => {
 
 test('Throws err when plugin is installed locally', async () => {
   let targetErr = undefined;
+  let checkResult = undefined;
   await new Promise((resolve, reject) => {
     return exec('cd example && npm install serverless-plugin-iopipe', (err, stdout = '', stderr = '') => {
       if (err || stderr){
@@ -94,10 +95,11 @@ test('Throws err when plugin is installed locally', async () => {
   });
   try {
     Plugin.setPackage();
-    Plugin.checkForLocalPlugin();
+    checkResult = Plugin.checkForLocalPlugin();
   } catch (err){
     targetErr = err;
   }
+  expect(checkResult).toBeUndefined();
   expect(targetErr).toBeDefined();
   expect(targetErr).toBeInstanceOf(Error);
   opts = options({preferLocal: true});
