@@ -1,7 +1,6 @@
 import _ from 'lodash';
-import {copySync, renameSync, removeSync, readdirSync, readFileSync} from 'fs-extra';
+import {copySync, renameSync, removeSync, readdirSync, readFileSync, readJsonSync, writeJsonSync} from 'fs-extra';
 import path from 'path';
-import {exec} from 'child_process';
 
 import ServerlessPlugin from './index';
 import sls from './__mocks__/sls';
@@ -84,16 +83,11 @@ test('Package is set via Plugin', () => {
 test('Throws err when plugin is installed locally', async () => {
   let targetErr = undefined;
   let checkResult = undefined;
-  await new Promise((resolve, reject) => {
-    return exec('cd example && npm install serverless-plugin-iopipe --save', (err, stdout = '', stderr = '') => {
-      if (err || stderr){
-        console.log(err, stderr);
-        return stderr && !err ? resolve() : reject();
-      }
-      return resolve();
-    });
-  });
+  const pkgPath = path.join(prefix, 'package.json');
+  let pkg = readJsonSync(pkgPath);
   try {
+    const dependencies = _.assign({}, pkg.dependencies, {'serverless-plugin-iopipe': '0.1.0'});
+    writeJsonSync(pkgPath, _.assign({}, pkg, {dependencies}), {spaces: 2});
     Plugin.setPackage();
     opts = options({preferLocal: false});
     checkResult = Plugin.checkForLocalPlugin();
@@ -106,15 +100,7 @@ test('Throws err when plugin is installed locally', async () => {
   opts = options({preferLocal: true});
   const result = Plugin.checkForLocalPlugin();
   expect(result).toBe('found-prefer-local');
-  await new Promise((resolve, reject) => {
-    return exec('cd example && npm uninstall serverless-plugin-iopipe --save', (err, stdout = '', stderr = '') => {
-      if (err || stderr){
-        console.log(err, stderr);
-        return stderr && !err ? resolve() : reject();
-      }
-      return resolve();
-    });
-  });
+  writeJsonSync(pkgPath, pkg, {spaces: 2});
   Plugin.setPackage();
   const notFound = Plugin.checkForLocalPlugin();
   expect(notFound).toBe('not-found');
