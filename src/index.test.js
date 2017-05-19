@@ -85,7 +85,7 @@ test('Throws err when plugin is installed locally', async () => {
   let targetErr = undefined;
   let checkResult = undefined;
   await new Promise((resolve, reject) => {
-    return exec('cd example && npm install serverless-plugin-iopipe', (err, stdout = '', stderr = '') => {
+    return exec('cd example && npm install serverless-plugin-iopipe --save', (err, stdout = '', stderr = '') => {
       if (err || stderr){
         console.log(err, stderr);
         return stderr && !err ? resolve() : reject();
@@ -95,6 +95,7 @@ test('Throws err when plugin is installed locally', async () => {
   });
   try {
     Plugin.setPackage();
+    opts = options({preferLocal: false});
     checkResult = Plugin.checkForLocalPlugin();
   } catch (err){
     targetErr = err;
@@ -106,7 +107,7 @@ test('Throws err when plugin is installed locally', async () => {
   const result = Plugin.checkForLocalPlugin();
   expect(result).toBe('found-prefer-local');
   await new Promise((resolve, reject) => {
-    return exec('cd example && npm uninstall serverless-plugin-iopipe', (err, stdout = '', stderr = '') => {
+    return exec('cd example && npm uninstall serverless-plugin-iopipe --save', (err, stdout = '', stderr = '') => {
       if (err || stderr){
         console.log(err, stderr);
         return stderr && !err ? resolve() : reject();
