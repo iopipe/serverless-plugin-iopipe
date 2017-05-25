@@ -100,7 +100,7 @@ class ServerlessIOpipePlugin {
   }
   checkForLocalPlugin(){
     const {dependencies, devDependencies} = this.package;
-    if (dependencies['serverless-plugin-iopipe'] || devDependencies['serverless-plugin-iopipe']){
+    if (dependencies['serverless-plugin-iopipe'] || devDependencies && devDependencies['serverless-plugin-iopipe']){
       if (!options().preferLocal){
         track({
           action: 'plugin-installed-locally'
