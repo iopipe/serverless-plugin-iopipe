@@ -11,11 +11,12 @@
     "build": "sls deploy --noDeploy",
     "deploy": "sls deploy",
     "greet": "sls iopipe",
+    "sls": "sls",
     "test": "npm run eslint"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serverless": "^1.13.1"
+    "serverless": "^1.15.1"
   }
 }
