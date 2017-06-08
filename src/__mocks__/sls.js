@@ -280,6 +280,11 @@ export default {
         "events": [],
         "name": "sls-iopipe-prod-multiple"
       },
+      "multipleDifferentHandler": {
+        "handler": "handlers/multiple.differentNameHandler",
+        "events": [],
+        "name": "sls-iopipe-prod-multiple-different-handler"
+      },
       "es5": {
         "handler": "handlers/es5.handler",
         "events": [],
@@ -882,11 +887,6 @@ export default {
                 "required": false,
                 "shortcut": "t"
               },
-              "quote": {
-                "usage": "Use \"single\" or \"double\" quotes in transformed output",
-                "required": false,
-                "shortcut": "q"
-              },
               "noVerify": {
                 "usage": "Skip a check that ensures iopipe is installed via npm/yarn and present in package.json",
                 "required": false,
@@ -1298,11 +1298,6 @@ export default {
             "usage": "Your iopipe token (clientId) to wrap your functions with",
             "required": false,
             "shortcut": "t"
-          },
-          "quote": {
-            "usage": "Use \"single\" or \"double\" quotes in transformed output",
-            "required": false,
-            "shortcut": "q"
           },
           "noVerify": {
             "usage": "Skip a check that ensures iopipe is installed via npm/yarn and present in package.json",

@@ -6,9 +6,7 @@
   "dependencies": {
     "debug": "^2.6.3",
     "fs-extra": "^2.1.2",
-    "jscodeshift": "^0.3.30",
     "lodash": "^4.17.4",
-    "pify": "^2.3.0",
     "universal-analytics": "^0.4.13",
     "uuid": "^3.0.1"
   },
@@ -72,6 +70,7 @@
     "jestUpdateSnapshot": "jest --updateSnapshot",
     "prepublish": "npm run build",
     "sls": "npm run build && npm run build --prefix example",
+    "slsDeploy": "npm run build && npm run deploy --prefix example",
     "test": "npm run eslint && npm run jest"
   },
   "version": "0.1.16"

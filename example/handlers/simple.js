@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-module.exports.handler = (event, context, callback) => {
+module.exports.handler = (event, context) => {
   const response = {
     statusCode: 200,
     body: JSON.stringify({
@@ -8,5 +8,5 @@ module.exports.handler = (event, context, callback) => {
       input: event
     })
   };
-  callback(null, response);
+  context.succeed(response);
 };

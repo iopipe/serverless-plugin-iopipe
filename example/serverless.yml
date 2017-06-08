@@ -8,8 +8,8 @@ plugins:
   - serverless-plugin-iopipe/index.js
 environment:
   NODE_ENV: ${env:NODE_ENV}
+  IOPIPE_TOKEN: ${env:IOPIPE_TOKEN}
 custom:
-  iopipeToken: SAMPLE_TOKEN_FOO
   iopipeQuote: double
   iopipeNoVerify: false
   iopipeExclude: excluded,foo
@@ -26,6 +26,8 @@ functions:
     handler: handlers/simple.handler
   multiple:
     handler: handlers/multiple.handler
+  multipleDifferentHandler:
+    handler: handlers/multiple.differentNameHandler
   es5:
     handler: handlers/es5.handler
   multiple-dots-in-name:
