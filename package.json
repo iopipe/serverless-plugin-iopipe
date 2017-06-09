@@ -26,7 +26,7 @@
     "serverless": "^1.13.1"
   },
   "engines": {
-    "node": ">=6.10.0"
+    "node": ">=4.2.6"
   },
   "homepage": "https://github.com/iopipe/serverless-plugin-iopipe#readme",
   "jest": {
@@ -72,5 +72,5 @@
     "slsDeploy": "npm run build && npm run deploy --prefix example",
     "test": "npm run eslint && npm run jest"
   },
-  "version": "0.2.0"
+  "version": "0.2.1"
 }
