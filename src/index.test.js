@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {copySync, renameSync, removeSync, readdirSync, readFileSync, readJsonSync, writeJsonSync} from 'fs-extra';
+import {copySync, renameSync, removeSync, readdirSync, readFileSync} from 'fs-extra';
 import path from 'path';
 
 import ServerlessPlugin from './index';
@@ -42,7 +42,7 @@ test('Plugin has props', () => {
 });
 
 test('Plugin has proper executeable methods', () => {
-  ['log', 'run', 'setPackage', 'setOptions', 'checkForLib', 'upgradeLib', 'checkToken', 'getFuncs', 'transform', 'operate', 'finish'].forEach(str => {
+  ['log', 'run', 'setPackage', 'setOptions', 'checkForLib', 'upgradeLib', 'checkToken', 'getFuncs', 'createFile', 'assignHandlers', 'finish'].forEach(str => {
     expect(Plugin[str]).toBeDefined();
     expect(Plugin[str]).toBeInstanceOf(Function);
   });
@@ -78,32 +78,6 @@ test('Package is set via Plugin', () => {
   expect(Plugin.package.dependencies).not.toBeDefined();
   Plugin.setPackage();
   expect(Plugin.package.dependencies).toBeDefined();
-});
-
-test('Throws err when plugin is installed locally', async () => {
-  let targetErr = undefined;
-  let checkResult = undefined;
-  const pkgPath = path.join(prefix, 'package.json');
-  let pkg = readJsonSync(pkgPath);
-  try {
-    const dependencies = _.assign({}, pkg.dependencies, {'serverless-plugin-iopipe': '0.1.0'});
-    writeJsonSync(pkgPath, _.assign({}, pkg, {dependencies}), {spaces: 2});
-    Plugin.setPackage();
-    opts = options({preferLocal: false});
-    checkResult = Plugin.checkForLocalPlugin();
-  } catch (err){
-    targetErr = err;
-  }
-  expect(checkResult).toBeUndefined();
-  expect(targetErr).toBeDefined();
-  expect(targetErr).toBeInstanceOf(Error);
-  opts = options({preferLocal: true});
-  const result = Plugin.checkForLocalPlugin();
-  expect(result).toBe('found-prefer-local');
-  writeJsonSync(pkgPath, pkg, {spaces: 2});
-  Plugin.setPackage();
-  const notFound = Plugin.checkForLocalPlugin();
-  expect(notFound).toBe('not-found');
 });
 
 test('Can check for lib, all is well', () => {
@@ -206,34 +180,34 @@ test('Gets funcs', () => {
   ['handler', 'name', 'method', 'path', 'relativePath'].forEach(str => {
     expect(simple).toHaveProperty(str);
   });
-  expect(simple.code).toMatchSnapshot();
 });
 
-test('Can setup .iopipe folder', async () => {
-  await Plugin.setupFolder();
-  const files = readdirSync(path.join(prefix, '.iopipe'));
-  const req = ['.serverless', 'handlers', 'package.json'];
-  expect(_.intersection(files, req)).toEqual(expect.arrayContaining(req));
-});
-
-test('Transforms from plugin', async () => {
-  Plugin.transform();
-  const first = _.head(Plugin.funcs);
-  ['handler', 'name', 'method', 'path', 'relativePath'].forEach(str => {
-    expect(first).toHaveProperty(str);
-  });
-  expect(first.transformed).toMatchSnapshot();
-});
-
-test('Saves transformed files to .iopipe folder', async () => {
-  Plugin.operate();
-  const file = readFileSync(path.join(prefix, '.iopipe', 'handlers/simple.js'), 'utf8');
+test('Can create iopipe handler file', async () => {
+  opts = options({token: 'TEST_TOKEN'});
+  Plugin.createFile();
+  const file = readFileSync(path.join(prefix, 'iopipe-handlers.js'), 'utf8');
+  expect(file).toBeDefined();
   expect(file).toMatchSnapshot();
 });
 
-test('Cleans up', async () => {
+test('Handler file works', async () => {
+  const {simple} = require(path.join(prefix, 'iopipe-handlers.js'));
+  expect(simple).toBeInstanceOf(Function);
+  const simplePromise = new Promise((resolve, reject) => {
+    // run the handler with dummy event / context
+    simple({}, {
+      succeed: resolve,
+      fail: reject
+    });
+  });
+  const simpleReturn = await simplePromise;
+  expect(simpleReturn).toBeInstanceOf(Object);
+  expect(simpleReturn.statusCode).toBe(200);
+});
+
+test('Cleans up', () => {
   Plugin.finish();
   const files = readdirSync(prefix);
-  expect(_.includes(files, '.iopipe')).toBeFalsy();
+  expect(_.includes(files, 'iopipe-handlers.js')).toBeFalsy();
   expect(_.includes(files, 'serverless.yml')).toBeTruthy();
 });

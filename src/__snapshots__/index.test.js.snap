@@ -1,49 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Gets funcs 1`] = `
-"const uuid = require('uuid');
+exports[`Can create iopipe handler file 1`] = `
+"const iopipe = require('iopipe')({token: 'TEST_TOKEN'});
 
-module.exports.handler = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Your uuid is: ' + uuid.v4(),
-      input: event
-    })
-  };
-  callback(null, response);
-};
-"
-`;
-
-exports[`Saves transformed files to .iopipe folder 1`] = `
-"const uuid = require('uuid');
-
-module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', installMethod: 'plugin-sls'})((event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Your uuid is: ' + uuid.v4(),
-      input: event
-    })
-  };
-  callback(null, response);
-});
-"
-`;
-
-exports[`Transforms from plugin 1`] = `
-"const uuid = require('uuid');
-
-module.exports.handler = require('iopipe')({clientId: 'DEFAULT_TOKEN', installMethod: 'plugin-sls'})((event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Your uuid is: ' + uuid.v4(),
-      input: event
-    })
-  };
-  callback(null, response);
-});
-"
+exports['simple'] = iopipe(require('./handlers/simple').handler);
+exports['multiple'] = iopipe(require('./handlers/multiple').handler);
+exports['multipleDifferentHandler'] = iopipe(require('./handlers/multiple').differentNameHandler);
+exports['es5'] = iopipe(require('./handlers/es5').handler);
+exports['multiple-dots-in-name'] = iopipe(require('./handlers/multiple.dots.in.name').handler);
+exports['noModule'] = iopipe(require('./handlers/noModule').handler);"
 `;

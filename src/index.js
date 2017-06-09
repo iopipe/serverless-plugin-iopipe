@@ -1,11 +1,9 @@
 import _ from 'lodash';
 import fs from 'fs-extra';
 import {exec} from 'child_process';
-import {basename, join, resolve as resolvePath} from 'path';
-import pify from 'pify';
+import {join} from 'path';
 import {default as debugLib} from 'debug';
 
-import transform from './transform';
 import options from './options';
 
 import {set as trackSet, track} from 'util/track';
@@ -24,6 +22,7 @@ class ServerlessIOpipePlugin {
     this.package = {};
     this.funcs = [];
     this.originalServicePath = this.sls.config.servicePath;
+    this.handlerFileName = 'iopipe-handlers';
     this.commands = {
       iopipe: {
         usage: 'Automatically wraps your function handlers in IOpipe, so you don\'t have to.',
@@ -59,14 +58,12 @@ class ServerlessIOpipePlugin {
     });
     this.log('Wrapping your functions with IO|...');
     this.setPackage();
-    this.checkForLocalPlugin();
     this.checkForLib();
     this.checkToken();
     this.upgradeLib();
     this.getFuncs();
-    await this.setupFolder();
-    this.transform();
-    this.operate();
+    this.createFile();
+    this.assignHandlers();
     track({
       action: 'run-finish',
       value: hrMillis(start)
@@ -80,6 +77,7 @@ class ServerlessIOpipePlugin {
     }
   }
   setOptions(opts){
+    const debug = createDebugger('setOptions');
     const custom = _.chain(this.sls)
       .get('service.custom')
       .pickBy((val, key) => key.match(/^iopipe/))
@@ -91,25 +89,17 @@ class ServerlessIOpipePlugin {
         return val;
       })
       .value();
-    const val = _.defaults(opts, custom);
+    const envVars = _.chain(process.env)
+      .pickBy((val, key) => key.match(/^IOPIPE/))
+      .mapKeys((val, key) => _.camelCase(key.replace(/^IOPIPE/, '')))
+      .value();
+    const val = _.defaults(opts, custom, envVars);
+    debug('Options object:', val);
     track({
       action: 'options-set',
       value: val
     });
     options(val);
-  }
-  checkForLocalPlugin(){
-    const {dependencies = {}, devDependencies = {}} = this.package;
-    if (dependencies['serverless-plugin-iopipe'] || devDependencies['serverless-plugin-iopipe']){
-      if (!options().preferLocal){
-        track({
-          action: 'plugin-installed-locally'
-        });
-        throw new Error('It looks as if you installed the serverless-iopipe-plugin without the global flag and running npm link. As a result, your packaged bundle size may be quite large. If you are sure you want to do this, set iopipePreferLocal to true.');
-      }
-      return 'found-prefer-local';
-    }
-    return 'not-found';
   }
   checkForLib(pack = this.package){
     const {dependencies} = pack;
@@ -244,7 +234,6 @@ class ServerlessIOpipePlugin {
           return _.assign({}, obj, {
             method: _.last(handlerArr),
             path,
-            code: fs.readFileSync(path, 'utf8'),
             name: key,
             relativePath
           });
@@ -259,64 +248,35 @@ class ServerlessIOpipePlugin {
         action: 'get-funcs-fail',
         value: err
       });
-      console.error('Failed to require functions.');
+      console.error('Failed to read functions from serverless.yml.');
       throw new Error(err);
     }
   }
-  async setupFolder(){
-    const debug = createDebugger('setupFolder');
-    const iopipeFolder = resolvePath(this.prefix, '.iopipe');
-    fs.removeSync(iopipeFolder);
-    fs.ensureDirSync(join(this.originalServicePath, '.serverless'));
-    const files = _.chain(this.prefix)
-      .thru(fs.readdirSync)
-      .difference(['.iopipe'])
+  createFile(){
+    const debug = createDebugger('createFile');
+    debug('Creating file');
+    const iopipeInclude = `const iopipe = require('iopipe')({token: '${options().token}'});`;
+    const funcContents = _.chain(this.funcs)
+      .map(obj => {
+        return `exports['${obj.name}'] = iopipe(require('./${obj.relativePath}').${obj.method});`;
+      })
+      .join('\n')
       .value();
-    fs.ensureDirSync(resolvePath(this.prefix, '.iopipe'));
-    const copy = pify(fs.copy);
-    debug('Copying all source files to .iopipe folder');
-    try {
-      await Promise.all(files.map(file => {
-        return copy(resolvePath(this.prefix, file), resolvePath(this.prefix, '.iopipe/', file));
-      }));
-      try {
-        const target = resolvePath(this.prefix, '.iopipe', 'node_modules/serverless-plugin-iopipe');
-        debug('Removing serverless-plugin-iopipe from node_modules if found.');
-        fs.removeSync(target);
-        fs.unlinkSync(target);
-      } catch (err){
-        _.noop();
-      }
-      this.sls.config.servicePath = join(this.originalServicePath, '.iopipe');
-    } catch (err){
-      this.log(err);
-    }
+    const contents = `${iopipeInclude}\n\n${funcContents}`;
+    fs.writeFileSync(join(this.originalServicePath, `${this.handlerFileName}.js`), contents);
   }
-  transform(){
-    if (_.isArray(this.funcs) && this.funcs.length){
-      this.funcs = this.funcs.map(f => transform(f, this.sls));
-      return true;
-    }
-    throw new Error('No functions to wrap iopipe with.');
-  }
-  operate(){
-    this.funcs.forEach(f => {
-      fs.writeFileSync(join(this.sls.config.servicePath, f.relativePath + '.js'), f.transformed);
+  assignHandlers(){
+    const debug = createDebugger('assignHandlers');
+    debug('Assigning iopipe handlers to sls service');
+    this.funcs.forEach(obj => {
+      _.set(this.sls.service.functions, `${obj.name}.handler`, `${this.handlerFileName}.${obj.name}`);
     });
   }
   finish(){
     const debug = createDebugger('finish');
     this.log('Successfully wrapped Node.js functions with IOpipe, cleaning up.');
-    debug('Copying .iopipe files back to .serverless');
-    fs.copySync(
-      join(this.originalServicePath, '.iopipe', '.serverless'),
-      join(this.originalServicePath, '.serverless')
-    );
-    debug('Assigning package artifact');
-    this.sls.service.package.artifact = join(this.originalServicePath, '.serverless', basename(this.sls.service.package.artifact));
-    this.sls.config.servicePath = this.originalServicePath;
-    debug('Removing .iopipe folder');
-    fs.removeSync(join(this.originalServicePath, '.iopipe'));
+    debug(`Removing ${this.handlerFileName}.js`);
+    fs.removeSync(join(this.originalServicePath, `${this.handlerFileName}.js`));
     track({
       action: 'finish'
     }).then(_.noop).catch(debug);

@@ -16,16 +16,12 @@ A [serverless](http://www.serverless.com) plugin to automatically wrap your func
 # Install
 With [yarn](https://yarnpkg.com) (recommended) in project directory:
 ```
-yarn add iopipe
-npm install serverless-plugin-iopipe -g
-npm link serverless-plugin-iopipe
+yarn add iopipe serverless-plugin-iopipe
 ```
 
 With npm in project directory:
 ```
-npm install iopipe
-npm install serverless-plugin-iopipe -g
-npm link serverless-plugin-iopipe
+npm install iopipe serverless-plugin-iopipe
 ```
 
 Add the plugin to your `serverless.yml` file:
@@ -43,9 +39,7 @@ custom:
 You're set! The plugin will run during an `sls deploy`.
 
 # How Does it Work?
-`serverless-plugin-iopipe` wraps the function handlers defined in `serverless.yml` with IOpipe so you don't have to. It allows you to deploy and upgrade multiple functions simultaneously.
-
-It's powered by the the excellent [jscodeshift](https://github.com/facebook/jscodeshift). The plugin examines each handler and modifies the code _only within the deployment package_ if it needs to.
+`serverless-plugin-iopipe` outputs a file that imports and wraps the function handlers defined in `serverless.yml` with IOpipe so you don't have to. It allows you to deploy and upgrade multiple functions simultaneously.
 
 # Options
 All options are set [in the "custom" config](https://serverless.com/framework/docs/providers/aws/guide/plugins#installing-plugins) in `serverless.yml`. [See Example](https://github.com/iopipe/serverless-plugin-iopipe/blob/master/example/serverless.yml)
@@ -74,16 +68,9 @@ Exclude certain functions from the plugin. Comma separated string.
 
 Use `process.env.IOPIPE_TOKEN` as a placeholder variable to allow the token to be configured via environment variables in Serverless, AWS CLI, or AWS Console instead of embedding the token string directly.
 
-#### `iopipePreferLocal` (optional)
-
-It's highly recommended you install this plugin globally instead of per-project. If installed locally, your Serverless bundle may be much larger than you'd like. However, if you're sure you want to use a local copy of serverless-plugin-iopipe, use this option to skip the global check.
-
 #### `iopipeNoStats` (optional)
 
 By default, the plugin sends _anonymized_, non-identifying usage statistics to Google Analytics. IOpipe will use this info to prioritize updates and enhancements to the plugin. If you'd like to opt out of this, just set this option.
-
-## FAQ
-- Why `npm link`? In order to keep your serverless package size down, it's recommended that you install the package globally. But due to the nature of module resolution, the Serverless Framework needs to reference a project-based copy of the plugin. `npm link` solves this issue by simply creating a symlink from your project directory to the global node_modules directory.
 
 ## Known Issues
 - This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.

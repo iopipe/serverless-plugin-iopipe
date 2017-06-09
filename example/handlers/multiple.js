@@ -19,3 +19,14 @@ module.exports.handler = (event, context, callback) => {
   };
   callback(null, response);
 };
+
+module.exports.differentNameHandler = (event, context, callback) => {
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'Go Serverless v1.0! Your function executed successfully!',
+      input: event
+    })
+  };
+  callback(null, response);
+};
