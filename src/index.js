@@ -229,7 +229,7 @@ class ServerlessIOpipePlugin {
           const key = arr[0];
           const obj = arr[1];
           const handlerArr = _.isString(obj.handler) ? obj.handler.split('.') : [];
-          const relativePath = handlerArr.slice(0, -1).join('.');
+          const relativePath = handlerArr.length > 1 ? handlerArr.slice(0, -1).join('.') : handlerArr[0];
           const path = `${servicePath}/${relativePath}.js`;
           return _.assign({}, obj, {
             method: _.last(handlerArr),
