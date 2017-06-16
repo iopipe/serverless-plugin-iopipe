@@ -28,6 +28,9 @@
   "engines": {
     "node": ">=4.2.6"
   },
+  "files": [
+    "dist/"
+  ],
   "homepage": "https://github.com/iopipe/serverless-plugin-iopipe#readme",
   "jest": {
     "coveragePathIgnorePatterns": [
