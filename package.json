@@ -71,8 +71,8 @@
     "jest": "jest",
     "jestUpdateSnapshot": "jest --updateSnapshot",
     "prepublish": "npm run build",
-    "sls": "npm run build && npm run build --prefix example",
-    "slsDeploy": "npm run build && npm run deploy --prefix example",
+    "sls": "LOCAL_PLUGIN=true npm run build && npm run build --prefix example",
+    "slsDeploy": "LOCAL_PLUGIN=true npm run build && npm run deploy --prefix example",
     "test": "npm run eslint && npm run jest"
   },
   "version": "0.2.1"

@@ -257,8 +257,15 @@ class ServerlessIOpipePlugin {
     debug('Creating file');
     const iopipeInclude = `const iopipe = require('iopipe')({token: '${options().token}'});`;
     const funcContents = _.chain(this.funcs)
-      .map(obj => {
-        return `exports['${obj.name}'] = iopipe(require('./${obj.relativePath}').${obj.method});`;
+      .map((obj, index) => {
+        return `exports['${obj.name}'] = function ${_.camelCase('attempt-' + obj.name)}${index}(event, context, callback) {
+  try {
+    return iopipe(require('./${obj.relativePath}').${obj.method})(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
+`;
       })
       .join('\n')
       .value();

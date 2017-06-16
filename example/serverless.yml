@@ -36,6 +36,8 @@ functions:
     handler: handlers/noModule.handler
   excluded:
     handler: handlers/excluded.handler
+  syntaxError:
+    handler: handlers/syntaxError.handler
   es5Named:
     handler: handlers/es5Named.handler
   python:
