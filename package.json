@@ -82,7 +82,7 @@
     "sls": "npm run build && npm run build --prefix example",
     "slsDeploy": "npm run build && npm run deploy --prefix example",
     "test": "npm run eslint && npm run jest",
-    "uglify": "uglifyjs dist/index.js --output dist/index.js --beautify",
+    "uglify": "uglifyjs dist/index.js --output dist/index.js",
     "webpack": "webpack"
   },
   "version": "0.2.1"
