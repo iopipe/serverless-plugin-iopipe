@@ -21,8 +21,10 @@
     "circular-json": "^0.3.1",
     "eslint": "^3.19.0",
     "eslint-plugin-jest": "^19.0.1",
+    "eslint-plugin-prettier": "^2.1.2",
     "jest": "^19.0.2",
     "pre-commit": "^1.2.2",
+    "prettier": "^1.4.4",
     "serverless": "^1.13.1"
   },
   "engines": {
@@ -66,7 +68,7 @@
     "build": "npm run folder && npm run babel && npm run copy",
     "babel": "./node_modules/babel-cli/bin/babel.js src --out-dir dist --ignore **/*.test.js,**/__mocks__/**",
     "copy": "node dist/util/copyDist",
-    "eslint": "./node_modules/eslint/bin/eslint.js src/**",
+    "eslint": "./node_modules/eslint/bin/eslint.js src/** --fix",
     "folder": "rm -rf dist && mkdir dist",
     "jest": "jest",
     "jestUpdateSnapshot": "jest --updateSnapshot",

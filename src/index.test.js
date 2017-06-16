@@ -1,11 +1,17 @@
 import _ from 'lodash';
-import {copySync, renameSync, removeSync, readdirSync, readFileSync} from 'fs-extra';
+import {
+  copySync,
+  renameSync,
+  removeSync,
+  readdirSync,
+  readFileSync
+} from 'fs-extra';
 import path from 'path';
 
 import ServerlessPlugin from './index';
 import sls from './__mocks__/sls';
 import options from './options';
-import {track} from 'util/track';
+import { track } from 'util/track';
 
 let Plugin = undefined;
 let opts = options();
@@ -42,7 +48,19 @@ test('Plugin has props', () => {
 });
 
 test('Plugin has proper executeable methods', () => {
-  ['log', 'run', 'setPackage', 'setOptions', 'checkForLib', 'upgradeLib', 'checkToken', 'getFuncs', 'createFile', 'assignHandlers', 'finish'].forEach(str => {
+  [
+    'log',
+    'run',
+    'setPackage',
+    'setOptions',
+    'checkForLib',
+    'upgradeLib',
+    'checkToken',
+    'getFuncs',
+    'createFile',
+    'assignHandlers',
+    'finish'
+  ].forEach(str => {
     expect(Plugin[str]).toBeDefined();
     expect(Plugin[str]).toBeInstanceOf(Function);
   });
@@ -57,19 +75,19 @@ test('Options are set via Plugin', () => {
 test('Options can be overridden', () => {
   expect(opts.token).toEqual('SAMPLE_TOKEN_FOO');
   expect(opts.exclude).toContain('excluded');
-  opts = options({token: 'WOW_FUN_TOKEN'});
+  opts = options({ token: 'WOW_FUN_TOKEN' });
   expect(opts.token).toEqual('WOW_FUN_TOKEN');
   expect(opts.exclude).toContain('excluded');
 });
 
 test('Tracking works', async () => {
-  const res = await track({action: 'dummy-test-action'});
+  const res = await track({ action: 'dummy-test-action' });
   expect(res).toEqual(1);
 });
 
 test('Tracking noops when noStats is set', async () => {
-  opts = options({noStats: true});
-  const res = await track({action: 'dummy-test-action'});
+  opts = options({ noStats: true });
+  const res = await track({ action: 'dummy-test-action' });
   expect(res).toEqual('no-stats');
 });
 
@@ -91,17 +109,17 @@ test('Skips lib check if package.json has no dependencies', () => {
 });
 
 test('Skips lib check if opts specify noVerify', () => {
-  opts = options({noVerify: true});
-  const check = Plugin.checkForLib({dependencies: {}});
+  opts = options({ noVerify: true });
+  const check = Plugin.checkForLib({ dependencies: {} });
   expect(check).toBe('no-verify-skip');
-  opts = options({noVerify: false});
+  opts = options({ noVerify: false });
 });
 
 test('Throws error if iopipe is not found in valid package.json', () => {
   let targetErr = undefined;
   try {
-    Plugin.checkForLib({dependencies: {lodash: '4.17.4'}});
-  } catch (err){
+    Plugin.checkForLib({ dependencies: { lodash: '4.17.4' } });
+  } catch (err) {
     targetErr = err;
   }
   expect(targetErr).toBeInstanceOf(Error);
@@ -111,9 +129,9 @@ test('Throws error if iopipe is not found in valid package.json', () => {
 test('Throws error if iopipe token is not found', () => {
   let targetErr = undefined;
   try {
-    opts = options({token: ''});
+    opts = options({ token: '' });
     Plugin.checkToken();
-  } catch (err){
+  } catch (err) {
     targetErr = err;
   }
   expect(targetErr).toBeInstanceOf(Error);
@@ -121,17 +139,23 @@ test('Throws error if iopipe token is not found', () => {
 });
 
 test('Does not upgrade if noUpgrade option is set', async () => {
-  opts = options({noUpgrade: true});
+  opts = options({ noUpgrade: true });
   const result = await Plugin.upgradeLib();
   expect(result).toBe('no-upgrade');
 });
 
 test('Uses npm if no yarn.lock (no upgrade needed)', async () => {
-  opts = options({noUpgrade: false});
-  renameSync(path.resolve(prefix, 'yarn.lock'), path.resolve(prefix, 'yarn1.lock'));
+  opts = options({ noUpgrade: false });
+  renameSync(
+    path.resolve(prefix, 'yarn.lock'),
+    path.resolve(prefix, 'yarn1.lock')
+  );
   const upgradeResult = await Plugin.upgradeLib();
   expect(upgradeResult).toBe('success-no-upgrade-npm');
-  renameSync(path.resolve(prefix, 'yarn1.lock'), path.resolve(prefix, 'yarn.lock'));
+  renameSync(
+    path.resolve(prefix, 'yarn1.lock'),
+    path.resolve(prefix, 'yarn.lock')
+  );
 });
 
 test('Uses yarn if available lockfile found (no upgrade needed)', async () => {
@@ -139,22 +163,33 @@ test('Uses yarn if available lockfile found (no upgrade needed)', async () => {
   expect(upgradeResult).toBe('success-no-upgrade-yarn');
 });
 
-async function upgrade(manager){
+async function upgrade(manager) {
   let err = undefined;
   try {
     //prepare dummy new package.json
-    copySync(path.join(prefix, 'package.json'), path.join(prefix, 'packageOld.json'));
-    manager === 'npm' && renameSync(path.join(prefix, 'yarn.lock'), path.join(prefix, 'yarn1.lock'));
+    copySync(
+      path.join(prefix, 'package.json'),
+      path.join(prefix, 'packageOld.json')
+    );
+    manager === 'npm' &&
+      renameSync(
+        path.join(prefix, 'yarn.lock'),
+        path.join(prefix, 'yarn1.lock')
+      );
     const upgradeResult = await Plugin.upgradeLib('0.2.1', 'cd example');
     expect(upgradeResult).toBe(`success-upgrade-${manager}-0.2.1`);
     //reset back to original
-  } catch (e){
+  } catch (e) {
     err = e;
   }
   removeSync(path.join(prefix, 'package.json'));
-  renameSync(path.join(prefix, 'packageOld.json'), path.join(prefix, 'package.json'));
-  manager === 'npm' && renameSync(path.join(prefix, 'yarn1.lock'), path.join(prefix, 'yarn.lock'));
-  if (err){
+  renameSync(
+    path.join(prefix, 'packageOld.json'),
+    path.join(prefix, 'package.json')
+  );
+  manager === 'npm' &&
+    renameSync(path.join(prefix, 'yarn1.lock'), path.join(prefix, 'yarn.lock'));
+  if (err) {
     throw new Error(err);
   }
   return manager;
@@ -183,7 +218,7 @@ test('Gets funcs', () => {
 });
 
 test('Can create iopipe handler file', async () => {
-  opts = options({token: 'TEST_TOKEN'});
+  opts = options({ token: 'TEST_TOKEN' });
   Plugin.createFile();
   const file = readFileSync(path.join(prefix, 'iopipe-handlers.js'), 'utf8');
   expect(file).toBeDefined();
@@ -191,14 +226,17 @@ test('Can create iopipe handler file', async () => {
 });
 
 test('Handler file works', async () => {
-  const {simple} = require(path.join(prefix, 'iopipe-handlers.js'));
+  const { simple } = require(path.join(prefix, 'iopipe-handlers.js'));
   expect(simple).toBeInstanceOf(Function);
   const simplePromise = new Promise((resolve, reject) => {
     // run the handler with dummy event / context
-    simple({}, {
-      succeed: resolve,
-      fail: reject
-    });
+    simple(
+      {},
+      {
+        succeed: resolve,
+        fail: reject
+      }
+    );
   });
   const simpleReturn = await simplePromise;
   expect(simpleReturn).toBeInstanceOf(Object);
