@@ -21,10 +21,10 @@ function outputHandlerCode(obj = {}, index) {
   const { name, relativePath, method } = obj;
   const fnName = _.camelCase('attempt-' + name) + index;
   return _.chain(handlerCode)
-    .replace(/EXPORT_NAME/, name)
-    .replace(/FUNCTION_NAME/, fnName)
-    .replace(/RELATIVE_PATH/, relativePath)
-    .replace(/METHOD/, method)
+    .replace(/EXPORT_NAME/g, name)
+    .replace(/FUNCTION_NAME/g, fnName)
+    .replace(/RELATIVE_PATH/g, relativePath)
+    .replace(/METHOD/g, method)
     .value();
 }
 
