@@ -20,12 +20,11 @@ function createDebugger(suffix) {
 function outputHandlerCode(obj = {}, index) {
   const { name, relativePath, method } = obj;
   const fnName = _.camelCase('attempt-' + name) + index;
-  return _.chain(handlerCode)
+  return handlerCode
     .replace(/EXPORT_NAME/g, name)
     .replace(/FUNCTION_NAME/g, fnName)
     .replace(/RELATIVE_PATH/g, relativePath)
-    .replace(/METHOD/g, method)
-    .value();
+    .replace(/METHOD/g, method);
 }
 
 class ServerlessIOpipePlugin {
