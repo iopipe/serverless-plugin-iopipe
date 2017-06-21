@@ -73,15 +73,15 @@
   "scripts": {
     "build": "NODE_ENV=production npm run folder && npm run webpack && npm run uglify && npm run copy",
     "babel": "./node_modules/babel-cli/bin/babel.js src --out-dir dist --ignore **/*.test.js,**/__mocks__/**",
-    "eslint": "eslint src/**",
+    "eslint": "eslint src",
     "eslintFix": "npm run eslint -- --fix",
     "copy": "node src/util/copyDist",
     "folder": "rm -rf dist && mkdir dist",
     "jest": "jest",
     "jestUpdateSnapshot": "jest --updateSnapshot",
     "prepublish": "npm run build",
-    "sls": "npm run build && npm run build --prefix example",
-    "slsDeploy": "npm run build && npm run deploy --prefix example",
+    "sls": "LOCAL_PLUGIN=true npm run build && npm run build --prefix example",
+    "slsDeploy": "LOCAL_PLUGIN=true npm run build && npm run deploy --prefix example",
     "test": "npm run eslint && npm run jest",
     "uglify": "uglifyjs dist/index.js --output dist/index.js --beautify",
     "webpack": "webpack"

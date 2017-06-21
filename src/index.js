@@ -8,9 +8,23 @@ import options from './options';
 
 import { set as trackSet, track } from './util/track';
 import hrMillis from './util/hrMillis';
+const handlerCode = fs.readFileSync(
+  join(__dirname, './handlerCode.js'),
+  'utf8'
+);
 
 function createDebugger(suffix) {
   return debugLib(`serverless-plugin-iopipe:${suffix}`);
+}
+
+function outputHandlerCode(obj = {}, index) {
+  const { name, relativePath, method } = obj;
+  const fnName = _.camelCase('attempt-' + name) + index;
+  return handlerCode
+    .replace(/EXPORT_NAME/g, name)
+    .replace(/FUNCTION_NAME/g, fnName)
+    .replace(/RELATIVE_PATH/g, relativePath)
+    .replace(/METHOD/g, method);
 }
 
 class ServerlessIOpipePlugin {
@@ -291,9 +305,7 @@ class ServerlessIOpipePlugin {
     const iopipeInclude = `const iopipe = require('iopipe')({token: '${options()
       .token}'});`;
     const funcContents = _.chain(this.funcs)
-      .map(obj => {
-        return `exports['${obj.name}'] = iopipe(require('./${obj.relativePath}').${obj.method});`;
-      })
+      .map(outputHandlerCode)
       .join('\n')
       .value();
     const contents = `${iopipeInclude}\n\n${funcContents}`;

@@ -243,6 +243,31 @@ test('Handler file works', async () => {
   expect(simpleReturn.statusCode).toBe(200);
 });
 
+test('Syntax error handler is accounted for', async () => {
+  const { syntaxError } = require(path.join(prefix, 'iopipe-handlers.js'));
+  expect(syntaxError).toBeInstanceOf(Function);
+  const syntaxErrorPromise = new Promise((resolve, reject) => {
+    // run the handler with dummy event / context
+    syntaxError(
+      {},
+      {
+        succeed: resolve,
+        fail: reject
+      }
+    );
+  });
+  let returnValue = undefined;
+  let thrownError = undefined;
+  try {
+    returnValue = await syntaxErrorPromise;
+  } catch (err) {
+    thrownError = err;
+  }
+  expect(returnValue).toBeUndefined();
+  expect(thrownError.message).toMatch(/Unexpected\stoken,\s/);
+  expect(thrownError.message).toMatch(/\/example\/handlers\/syntaxError\.js/);
+});
+
 test('Cleans up', () => {
   Plugin.finish();
   const files = readdirSync(prefix);

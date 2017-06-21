@@ -218,6 +218,11 @@ export default {
         events: [],
         name: 'sls-iopipe-prod-noModule'
       },
+      syntaxError: {
+        handler: 'handlers/syntaxError.handler',
+        events: [],
+        name: 'sls-iopipe-prod-syntaxError'
+      },
       excluded: {
         handler: 'handlers/excluded.handler',
         events: [],
