@@ -1,10 +1,13 @@
-import fs from 'fs-extra';
-import {resolve} from 'path';
+const fs = require('fs-extra');
+const path = require('path');
 
-const distFolder = resolve(__dirname, '../');
-const newFolder = resolve(__dirname, '../../example/.serverless_plugins/serverless-plugin-iopipe');
+const distFolder = path.resolve(__dirname, '../');
+const newFolder = path.resolve(
+  __dirname,
+  '../../example/.serverless_plugins/serverless-plugin-iopipe'
+);
 
 //only copy the dist folder if needed for local development
-if (process.env.LOCAL_PLUGIN){
+if (process.env.LOCAL_PLUGIN) {
   fs.copySync(distFolder, newFolder);
 }

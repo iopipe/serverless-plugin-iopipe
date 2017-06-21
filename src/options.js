@@ -1,7 +1,7 @@
 import _ from 'lodash';
 let options = {};
 
-export default function(obj = options){
+export default function(obj = options) {
   options = _.chain(obj)
     .defaults(options)
     .defaults({

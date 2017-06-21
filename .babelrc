@@ -1,18 +1,14 @@
 {
+  "comments": false,
   "presets": [
     ["env", {
       "targets": {
-        "node": [">= 4.2.6"]
+        "node": ["4.2"]
       }
     }],
-    "stage-0"
+    "stage-0",
   ],
   "plugins": [
-    ["module-resolver", {
-      "root": ["./src"],
-      "alias": {
-        "util": "./util"
-      }
-    }]
+    ["transform-runtime", {"polyfill": false, "regenerator": true}]
   ]
 }
