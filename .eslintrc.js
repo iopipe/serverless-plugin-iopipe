@@ -3,7 +3,10 @@ module.exports = {
   "extends": [
     "eslint:recommended",
   ],
-  "plugins": ["jest"],
+  "plugins": [
+    "jest",
+    "prettier"
+  ],
   "env": {
     "browser": true,
     "node": true,
@@ -35,6 +38,9 @@ module.exports = {
  */
     // babel inserts "use strict"; for us
     // http://eslint.org/docs/rules/strict
+    "prettier/prettier": ["error", {
+      "singleQuote": true
+    }],
     "strict": [2, "never"],
     "no-var": 2,                     // http://eslint.org/docs/rules/no-var
     "no-shadow": 2,                  // http://eslint.org/docs/rules/no-shadow

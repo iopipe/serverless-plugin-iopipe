@@ -2,6 +2,7 @@
 
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 [![CircleCI](https://circleci.com/gh/iopipe/serverless-plugin-iopipe/tree/master.svg?style=svg&circle-token=3787c8931aea4de4facb5fde25ae456f294f8cc1)](https://circleci.com/gh/iopipe/serverless-plugin-iopipe/tree/master)
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 A [serverless](http://www.serverless.com) plugin to automatically wrap your functions with [iopipe](https://iopipe.com).
 
@@ -79,3 +80,6 @@ By default, the plugin sends _anonymized_, non-identifying usage statistics to G
 
 ## Support
 File an issue here, hit us up [on Slack](https://iopipe.now.sh/), or send us a note at [support@iopipe.com](mailto:support@iopipe.com)
+
+## Contributing
+- This project uses [Prettier](https://github.com/prettier/prettier). Please execute `npm run eslintFix` to auto-format the code before submitting pull requests.
