@@ -6,8 +6,8 @@ import { default as debugLib } from 'debug';
 
 import options from './options';
 
-import { set as trackSet, track } from 'util/track';
-import hrMillis from 'util/hrMillis';
+import { set as trackSet, track } from './util/track';
+import hrMillis from './util/hrMillis';
 
 function createDebugger(suffix) {
   return debugLib(`serverless-plugin-iopipe:${suffix}`);

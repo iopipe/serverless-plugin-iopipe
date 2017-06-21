@@ -11,7 +11,7 @@ import path from 'path';
 import ServerlessPlugin from './index';
 import sls from './__mocks__/sls';
 import options from './options';
-import { track } from 'util/track';
+import { track } from './util/track';
 
 let Plugin = undefined;
 let opts = options();
