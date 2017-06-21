@@ -73,7 +73,7 @@
   "scripts": {
     "build": "NODE_ENV=production npm run folder && npm run webpack && npm run uglify && npm run copy",
     "babel": "./node_modules/babel-cli/bin/babel.js src --out-dir dist --ignore **/*.test.js,**/__mocks__/**",
-    "eslint": "eslint src/**",
+    "eslint": "eslint src",
     "eslintFix": "npm run eslint -- --fix",
     "copy": "node src/util/copyDist",
     "folder": "rm -rf dist && mkdir dist",

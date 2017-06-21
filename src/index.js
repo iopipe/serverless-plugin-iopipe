@@ -8,9 +8,24 @@ import options from './options';
 
 import { set as trackSet, track } from './util/track';
 import hrMillis from './util/hrMillis';
+const handlerCode = fs.readFileSync(
+  join(__dirname, './handlerCode.js'),
+  'utf8'
+);
 
 function createDebugger(suffix) {
   return debugLib(`serverless-plugin-iopipe:${suffix}`);
+}
+
+function outputHandlerCode(obj = {}, index) {
+  const { name, relativePath, method } = obj;
+  const fnName = _.camelCase('attempt-' + name) + index;
+  return _.chain(handlerCode)
+    .replace(/EXPORT_NAME/, name)
+    .replace(/FUNCTION_NAME/, fnName)
+    .replace(/RELATIVE_PATH/, relativePath)
+    .replace(/METHOD/, method)
+    .value();
 }
 
 class ServerlessIOpipePlugin {
@@ -291,18 +306,7 @@ class ServerlessIOpipePlugin {
     const iopipeInclude = `const iopipe = require('iopipe')({token: '${options()
       .token}'});`;
     const funcContents = _.chain(this.funcs)
-      .map((obj, index) => {
-        return `exports['${obj.name}'] = function ${_.camelCase(
-          'attempt-' + obj.name
-        )}${index}(event, context, callback) {
-  try {
-    return iopipe(require('./${obj.relativePath}').${obj.method})(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-`;
-      })
+      .map(outputHandlerCode)
       .join('\n')
       .value();
     const contents = `${iopipeInclude}\n\n${funcContents}`;
