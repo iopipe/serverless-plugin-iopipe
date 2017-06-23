@@ -17,6 +17,10 @@ module.exports = {
         use: {
           loader: 'babel-loader'
         }
+      },
+      {
+        test: /handlerCode\.js$/,
+        use: 'raw-loader'
       }
     ]
   }

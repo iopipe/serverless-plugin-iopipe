@@ -13,7 +13,6 @@ export default {
         region: 'us-west-2',
         token: 'SAMPLE_TOKEN_FOO',
         quote: 'double',
-        noVerify: false,
         exclude: ['excluded', 'foo'],
         placeholder: false
       },
@@ -182,7 +181,6 @@ export default {
     custom: {
       iopipeToken: 'SAMPLE_TOKEN_FOO',
       iopipeQuote: 'double',
-      iopipeNoVerify: false,
       iopipeExclude: 'excluded,foo',
       iopipePlaceholder: false
     },
