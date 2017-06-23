@@ -8,37 +8,30 @@ import {
 } from 'fs-extra';
 import path from 'path';
 
-import ServerlessPlugin from './index';
+const ServerlessPlugin = require('../dist/index');
 import sls from './__mocks__/sls';
-import options from './options';
-import { track } from './util/track';
 
 let Plugin = undefined;
-let opts = options();
 const prefix = path.resolve(__dirname, '../example');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
-
-test('Options module is a function', () => {
-  expect(options).toBeInstanceOf(Function);
-});
-
-test('Options are set with defaults', () => {
-  expect(opts).toBeDefined();
-  expect(opts).toHaveProperty('quote');
-  expect(opts.noVerify).toBeUndefined();
-});
-
-test('Track visitor is undefined', async () => {
-  const res = await track();
-  expect(res).toBe('no-visitor');
-});
 
 test('Can instantiate main class', () => {
   Plugin = new ServerlessPlugin(sls, {
     prefix
   });
   expect(Plugin).toBeDefined();
+});
+
+test('Options module is a function', () => {
+  expect(Plugin.getOptions).toBeInstanceOf(Function);
+});
+
+test('Options are set with defaults', () => {
+  const opts = Plugin.getOptions();
+  expect(opts).toBeDefined();
+  expect(opts).toHaveProperty('quote');
+  expect(opts.noVerify).toBeUndefined();
 });
 
 test('Plugin has props', () => {
@@ -67,27 +60,27 @@ test('Plugin has proper executeable methods', () => {
 });
 
 test('Options are set via Plugin', () => {
-  opts = options();
+  const opts = Plugin.getOptions();
   expect(opts).toBeInstanceOf(Object);
-  expect(opts).toHaveProperty('noVerify');
+  expect(opts.token).toEqual('SAMPLE_TOKEN_FOO');
 });
 
 test('Options can be overridden', () => {
-  expect(opts.token).toEqual('SAMPLE_TOKEN_FOO');
+  let opts = Plugin.getOptions();
   expect(opts.exclude).toContain('excluded');
-  opts = options({ token: 'WOW_FUN_TOKEN' });
+  opts = Plugin.getOptions({ token: 'WOW_FUN_TOKEN' });
   expect(opts.token).toEqual('WOW_FUN_TOKEN');
   expect(opts.exclude).toContain('excluded');
 });
 
 test('Tracking works', async () => {
-  const res = await track({ action: 'dummy-test-action' });
+  const res = await Plugin.track({ action: 'dummy-test-action' });
   expect(res).toEqual(1);
 });
 
 test('Tracking noops when noStats is set', async () => {
-  opts = options({ noStats: true });
-  const res = await track({ action: 'dummy-test-action' });
+  Plugin.getOptions({ noStats: true });
+  const res = await Plugin.track({ action: 'dummy-test-action' });
   expect(res).toEqual('no-stats');
 });
 
@@ -109,10 +102,10 @@ test('Skips lib check if package.json has no dependencies', () => {
 });
 
 test('Skips lib check if opts specify noVerify', () => {
-  opts = options({ noVerify: true });
+  Plugin.getOptions({ noVerify: true });
   const check = Plugin.checkForLib({ dependencies: {} });
   expect(check).toBe('no-verify-skip');
-  opts = options({ noVerify: false });
+  Plugin.getOptions({ noVerify: false });
 });
 
 test('Throws error if iopipe is not found in valid package.json', () => {
@@ -129,7 +122,7 @@ test('Throws error if iopipe is not found in valid package.json', () => {
 test('Throws error if iopipe token is not found', () => {
   let targetErr = undefined;
   try {
-    opts = options({ token: '' });
+    Plugin.getOptions({ token: '' });
     Plugin.checkToken();
   } catch (err) {
     targetErr = err;
@@ -139,13 +132,13 @@ test('Throws error if iopipe token is not found', () => {
 });
 
 test('Does not upgrade if noUpgrade option is set', async () => {
-  opts = options({ noUpgrade: true });
+  Plugin.getOptions({ noUpgrade: true });
   const result = await Plugin.upgradeLib();
   expect(result).toBe('no-upgrade');
 });
 
 test('Uses npm if no yarn.lock (no upgrade needed)', async () => {
-  opts = options({ noUpgrade: false });
+  Plugin.getOptions({ noUpgrade: false });
   renameSync(
     path.resolve(prefix, 'yarn.lock'),
     path.resolve(prefix, 'yarn1.lock')
@@ -218,7 +211,7 @@ test('Gets funcs', () => {
 });
 
 test('Can create iopipe handler file', async () => {
-  opts = options({ token: 'TEST_TOKEN' });
+  Plugin.getOptions({ token: 'TEST_TOKEN' });
   Plugin.createFile();
   const file = readFileSync(path.join(prefix, 'iopipe-handlers.js'), 'utf8');
   expect(file).toBeDefined();

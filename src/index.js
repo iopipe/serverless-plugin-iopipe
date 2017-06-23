@@ -4,14 +4,9 @@ import { exec } from 'child_process';
 import { join } from 'path';
 import { default as debugLib } from 'debug';
 
-import options from './options';
-
-import { set as trackSet, track } from './util/track';
+import { getVisitor, track } from './util/track';
 import hrMillis from './util/hrMillis';
-const handlerCode = fs.readFileSync(
-  join(__dirname, './handlerCode.js'),
-  'utf8'
-);
+import handlerCode from './handlerCode.js';
 
 function createDebugger(suffix) {
   return debugLib(`serverless-plugin-iopipe:${suffix}`);
@@ -35,7 +30,7 @@ class ServerlessIOpipePlugin {
       opts.prefix ||
       this.sls.config.servicePath ||
       process.env.npm_config_prefix;
-    trackSet(this);
+    this.visitor = getVisitor(this);
     this.package = {};
     this.funcs = [];
     this.originalServicePath = this.sls.config.servicePath;
@@ -53,14 +48,27 @@ class ServerlessIOpipePlugin {
       'iopipe:run': this.greeting.bind(this)
     };
   }
+  getOptions(obj = this.options) {
+    this.options = _.chain(obj)
+      .defaults(this.options)
+      .defaults({
+        quote: 'single'
+      })
+      .mapKeys((val, key) => _.camelCase(key))
+      .value();
+    return this.options;
+  }
   log(arg1, ...rest) {
     //sls doesn't actually support multiple args to log?
     const logger = this.sls.cli.log || console.log;
     logger.call(this.sls.cli, `serverless-plugin-iopipe: ${arg1}`, ...rest);
   }
+  track(kwargs) {
+    return track(this, kwargs);
+  }
   greeting() {
     this.log('Welcome to the IOpipe Serverless plugin.');
-    const { token } = options();
+    const { token } = this.getOptions();
     if (token) {
       this.log(
         'You have your token specified, so you are all set! Just run sls deploy for the magic.'
@@ -73,7 +81,7 @@ class ServerlessIOpipePlugin {
   }
   async run() {
     const start = process.hrtime();
-    track({
+    this.track({
       action: 'run-start'
     });
     this.log('Wrapping your functions with IO|...');
@@ -84,7 +92,7 @@ class ServerlessIOpipePlugin {
     this.getFuncs();
     this.createFile();
     this.assignHandlers();
-    track({
+    this.track({
       action: 'run-finish',
       value: hrMillis(start)
     });
@@ -115,26 +123,26 @@ class ServerlessIOpipePlugin {
       .value();
     const val = _.defaults(opts, custom, envVars);
     debug('Options object:', val);
-    track({
+    this.track({
       action: 'options-set',
       value: val
     });
-    options(val);
+    this.getOptions(val);
   }
   checkForLib(pack = this.package) {
     const { dependencies } = pack;
     if (_.isEmpty(pack) || !_.isPlainObject(pack)) {
-      track({
+      this.track({
         action: 'no-package-skip-lib-check'
       });
       this.log('No package.json found, skipping lib check.');
       return 'no-package-skip';
     } else if (_.isPlainObject(pack) && !dependencies.iopipe) {
-      if (options().noVerify) {
+      if (this.getOptions().noVerify) {
         this.log('Skipping iopipe module installation check.');
         return 'no-verify-skip';
       }
-      track({
+      this.track({
         action: 'lib-not-found'
       });
       throw new Error(
@@ -144,9 +152,9 @@ class ServerlessIOpipePlugin {
     return true;
   }
   checkToken() {
-    const token = options().token;
+    const token = this.getOptions().token;
     if (!token) {
-      track({
+      this.track({
         action: 'token-missing'
       });
       throw new Error(
@@ -156,7 +164,7 @@ class ServerlessIOpipePlugin {
     return true;
   }
   upgradeLib(targetVerison, preCmd = 'echo Installing.') {
-    if (options().noUpgrade) {
+    if (this.getOptions().noUpgrade) {
       return 'no-upgrade';
     }
     const debug = createDebugger('upgrade');
@@ -165,7 +173,7 @@ class ServerlessIOpipePlugin {
     const useYarn = _.includes(files, 'yarn.lock');
     const packageManager = useYarn ? 'yarn' : 'npm';
     debug(`Using pkg manager: ${packageManager}`);
-    track({
+    this.track({
       action: 'lib-upgrade',
       label: packageManager
     });
@@ -176,11 +184,11 @@ class ServerlessIOpipePlugin {
           if (stderr1 || err1) {
             this.log('Could not finish upgrading IOpipe automatically.');
             debug(`Err from ${packageManager} outdated:`, stderr1 || err1);
-            track({
+            this.track({
               action: `${packageManager}-outdated-error`,
               value: stderr1 || err1
             });
-            return reject('err-npm-outdated');
+            return reject(`${packageManager}-outdated-error`);
           }
           const arr = stdout1.split('\n');
           debug(`From ${packageManager} outdated command: `, arr);
@@ -213,7 +221,7 @@ class ServerlessIOpipePlugin {
                   .last()
                   .value();
                 if (exitCode === '0') {
-                  track({
+                  this.track({
                     action: 'lib-upgrade-success',
                     value: stderr1 || err1
                   });
@@ -229,7 +237,7 @@ class ServerlessIOpipePlugin {
                 );
                 const err = stderr2 || stderr1 || 'Unknown error.';
                 this.log(err);
-                track({
+                this.track({
                   action: 'lib-upgrade-error',
                   value: err
                 });
@@ -243,7 +251,7 @@ class ServerlessIOpipePlugin {
           this.log(
             'Something went wrong trying to upgrade IOpipe automatically.'
           );
-          track({
+          this.track({
             action: 'lib-upgrade-error',
             value: 'unknown'
           });
@@ -256,7 +264,7 @@ class ServerlessIOpipePlugin {
     try {
       const { servicePath } = this.sls.config;
       this.funcs = _.chain(this.sls.service.functions)
-        .omit(options().exclude)
+        .omit(this.getOptions().exclude)
         .toPairs()
         //filter out functions that are not Node.js
         .reject(arr => {
@@ -286,12 +294,12 @@ class ServerlessIOpipePlugin {
           });
         })
         .value();
-      track({
+      this.track({
         action: 'funcs-count',
         value: this.funcs.length
       });
     } catch (err) {
-      track({
+      this.track({
         action: 'get-funcs-fail',
         value: err
       });
@@ -302,7 +310,7 @@ class ServerlessIOpipePlugin {
   createFile() {
     const debug = createDebugger('createFile');
     debug('Creating file');
-    const iopipeInclude = `const iopipe = require('iopipe')({token: '${options()
+    const iopipeInclude = `const iopipe = require('iopipe')({token: '${this.getOptions()
       .token}'});`;
     const funcContents = _.chain(this.funcs)
       .map(outputHandlerCode)
@@ -332,7 +340,7 @@ class ServerlessIOpipePlugin {
     );
     debug(`Removing ${this.handlerFileName}.js`);
     fs.removeSync(join(this.originalServicePath, `${this.handlerFileName}.js`));
-    track({
+    this.track({
       action: 'finish'
     })
       .then(_.noop)

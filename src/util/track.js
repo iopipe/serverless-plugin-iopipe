@@ -6,34 +6,31 @@ import uuid from 'uuid';
 import { createHash } from 'crypto';
 import { default as debugLib } from 'debug';
 
-import options from '../options';
-
-let userId = undefined;
-let visitor = undefined;
-
 const debug = debugLib('serverless-plugin-iopipe:track');
 
-export function set(instance) {
+export function getVisitor(pluginInstance) {
   // create consistent, yet anonymized id for usage stats
-  const pkg = fs.readJsonSync(join(instance.prefix, 'package.json'));
+  const pkg = fs.readJsonSync(join(pluginInstance.prefix, 'package.json'));
   const str =
     pkg.author ||
     _.get(pkg, 'repository.url') ||
     pkg.name ||
     pkg.homepage ||
     uuid.v4();
-  userId = createHash('md5').update(str).digest('hex');
-  visitor = ua('UA-73165042-2', userId, {
+  const userId = createHash('md5').update(str).digest('hex');
+  const visitor = ua('UA-73165042-2', userId, {
     strictCidFormat: false,
     https: true
   });
+  return visitor;
 }
 
-export function track(obj = {}) {
+export function track(pluginInstance, obj = {}) {
+  const { visitor } = pluginInstance;
   if (!visitor) {
     return Promise.resolve('no-visitor');
   }
-  if (options().noStats) {
+  if (pluginInstance.getOptions().noStats) {
     return Promise.resolve('no-stats');
   }
   const { category = 'event', action = 'action', label = 'label', value } = obj;
