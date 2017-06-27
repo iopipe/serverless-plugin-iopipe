@@ -17,12 +17,14 @@ A [serverless](http://www.serverless.com) plugin to automatically wrap your func
 # Install
 With [yarn](https://yarnpkg.com) (recommended) in project directory:
 ```
-yarn add iopipe serverless-plugin-iopipe
+yarn add iopipe
+yarn add serverless-plugin-iopipe --dev
 ```
 
 With npm in project directory:
 ```
-npm install iopipe serverless-plugin-iopipe
+npm install iopipe
+npm install serverless-plugin-iopipe --save-dev
 ```
 
 Add the plugin to your `serverless.yml` file:
