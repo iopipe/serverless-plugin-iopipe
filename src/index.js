@@ -22,6 +22,64 @@ function outputHandlerCode(obj = {}, index) {
     .replace(/METHOD/g, method);
 }
 
+function getExitCode(stdout) {
+  return _.chain(stdout).defaultTo('').split('\n').compact().last().value();
+}
+
+function getUpgradeVersion(packageManager, suppliedVersion, debug) {
+  return new Promise((resolve, reject) => {
+    exec(
+      `${packageManager} outdated iopipe && echo $?`,
+      (err, stdout = '', stderr = '') => {
+        const stdoutLines = _.chain(stdout)
+          .split('\n')
+          .map(s => _.trim(s))
+          .value();
+        const publishedVersions = _.chain(stdoutLines)
+          .find((str = '') => str.match(/iopipe/))
+          .split(' ')
+          .compact()
+          .slice(1, 4)
+          .value();
+        const [current, wanted, latest] = publishedVersions;
+        // auto-upgrade to 1.0 since its major, but non-breaking
+        const version =
+          suppliedVersion ||
+          (current !== latest && latest.match(/^1\./) && latest) ||
+          wanted;
+        debug(`From ${packageManager} outdated command: `, stdoutLines);
+        if (version) {
+          return resolve(version);
+        } else if (getExitCode(stdout) === '0') {
+          return resolve(true);
+        }
+        return reject(stderr);
+      }
+    );
+  });
+}
+
+function runUpgrade(pluginInstance, packageManager, version, preCmd, debug) {
+  return new Promise((resolve, reject) => {
+    debug(`Attempting to upgrade to ${version}`);
+    // write package.json to file
+    fs.writeFileSync(
+      join(pluginInstance.prefix, 'package.json'),
+      JSON.stringify(pluginInstance.package, null, '  ')
+    );
+    debug(`Executing ${packageManager} install`);
+    return exec(
+      `${preCmd} && ${packageManager} install && echo $?`,
+      (err, stdout = '', stderr = '') => {
+        if (err) {
+          return reject(err);
+        }
+        return getExitCode(stdout) === '0' ? resolve(true) : reject(stderr);
+      }
+    );
+  });
+}
+
 class ServerlessIOpipePlugin {
   constructor(sls = {}, opts) {
     this.sls = sls;
@@ -88,7 +146,7 @@ class ServerlessIOpipePlugin {
     this.setPackage();
     this.checkForLib();
     this.checkToken();
-    this.upgradeLib();
+    await this.upgradeLib();
     this.getFuncs();
     this.createFile();
     this.assignHandlers();
@@ -163,12 +221,12 @@ class ServerlessIOpipePlugin {
     }
     return true;
   }
-  upgradeLib(targetVerison, preCmd = 'echo Installing.') {
+  async upgradeLib(suppliedTargetVersion, preCmd = 'echo Installing.') {
     if (this.getOptions().noUpgrade) {
       return 'no-upgrade';
     }
     const debug = createDebugger('upgrade');
-    let wantedVersion = targetVerison;
+    let wantedVersion = suppliedTargetVersion;
     const files = fs.readdirSync(this.prefix);
     const useYarn = _.includes(files, 'yarn.lock');
     const packageManager = useYarn ? 'yarn' : 'npm';
@@ -177,88 +235,43 @@ class ServerlessIOpipePlugin {
       action: 'lib-upgrade',
       label: packageManager
     });
-    return new Promise((resolve, reject) => {
-      exec(
-        `${packageManager} outdated iopipe`,
-        (err1, stdout1 = '', stderr1 = '') => {
-          if (stderr1 || err1) {
-            this.log('Could not finish upgrading IOpipe automatically.');
-            debug(`Err from ${packageManager} outdated:`, stderr1 || err1);
-            this.track({
-              action: `${packageManager}-outdated-error`,
-              value: stderr1 || err1
-            });
-            return reject(`${packageManager}-outdated-error`);
-          }
-          const arr = stdout1.split('\n');
-          debug(`From ${packageManager} outdated command: `, arr);
-          const line2Arr = _.compact(
-            (arr[packageManager === 'yarn' ? 2 : 1] || '').split(' ')
-          );
-          const libName = line2Arr[0];
-          wantedVersion = targetVerison || line2Arr[2];
-          if ((libName === 'iopipe' && wantedVersion) || targetVerison) {
-            // set version to newer
-            debug(`Attempting to upgrade to ${wantedVersion}`);
-            this.package.dependencies.iopipe = wantedVersion;
-            // write package.json to file
-            fs.writeFileSync(
-              join(this.prefix, 'package.json'),
-              JSON.stringify(this.package, null, '  ')
-            );
-            debug(`Executing ${packageManager} install`);
-            return exec(
-              `${preCmd} && ${packageManager} install && echo $?`,
-              (err2, stdout2 = '', stderr2 = '') => {
-                if (err2) {
-                  console.log(err2);
-                  return reject(err2);
-                }
-                const exitCode = _.chain(stdout2)
-                  .defaultTo('')
-                  .split('\n')
-                  .compact()
-                  .last()
-                  .value();
-                if (exitCode === '0') {
-                  this.track({
-                    action: 'lib-upgrade-success',
-                    value: stderr1 || err1
-                  });
-                  this.log(
-                    `Upgraded IOpipe to ${wantedVersion} automatically. 💪`
-                  );
-                  return resolve(
-                    `success-upgrade-${packageManager}-${wantedVersion}`
-                  );
-                }
-                this.log(
-                  'Ran into an error attempting to upgrade IOpipe automatically.'
-                );
-                const err = stderr2 || stderr1 || 'Unknown error.';
-                this.log(err);
-                this.track({
-                  action: 'lib-upgrade-error',
-                  value: err
-                });
-                return reject(`err-install-${packageManager}`);
-              }
-            );
-          } else if (!libName) {
-            this.log('You have the latest IOpipe library. Nice work!');
-            return resolve(`success-no-upgrade-${packageManager}`);
-          }
-          this.log(
-            'Something went wrong trying to upgrade IOpipe automatically.'
-          );
-          this.track({
-            action: 'lib-upgrade-error',
-            value: 'unknown'
-          });
-          return reject('err-unknown');
-        }
-      );
+    let version = undefined;
+
+    // Get the version of iopipe that we need to upgrade to, if necessary
+    try {
+      version = await getUpgradeVersion(packageManager, wantedVersion, debug);
+      if (version === true) {
+        this.log('You have the latest IOpipe library. Nice work!');
+        return `success-no-upgrade-${packageManager}`;
+      }
+    } catch (err) {
+      this.log('Could not finish upgrading IOpipe automatically.');
+      debug(`Err from ${packageManager} outdated:`, err);
+      this.track({
+        action: `${packageManager}-outdated-error`,
+        value: err
+      });
+      return `${packageManager}-outdated-error`;
+    }
+
+    // If we have a version that we now need to upgrade to, lets upgrade
+    try {
+      this.package.dependencies.iopipe = version;
+      await runUpgrade(this, packageManager, version, preCmd, debug);
+    } catch (err) {
+      this.log(err);
+      this.track({
+        action: 'lib-upgrade-error',
+        value: err
+      });
+      return `err-install-${packageManager}`;
+    }
+    this.track({
+      action: 'lib-upgrade-success',
+      value: true
     });
+    this.log(`Upgraded IOpipe to ${version} automatically. 💪`);
+    return `success-upgrade-${packageManager}-${version}`;
   }
   getFuncs() {
     try {
