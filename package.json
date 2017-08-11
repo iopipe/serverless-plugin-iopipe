@@ -73,7 +73,7 @@
   },
   "scripts": {
     "build": "NODE_ENV=production npm run folder && npm run webpack && npm run uglify && npm run copy",
-    "babel": "./node_modules/babel-cli/bin/babel.js src --out-dir dist --ignore **/*.test.js,**/__mocks__/**",
+    "babel": "babel src --out-dir dist --ignore **/*.test.js,**/__mocks__/**",
     "eslint": "eslint src",
     "eslintFix": "npm run eslint -- --fix",
     "copy": "node src/util/copyDist",
@@ -84,7 +84,7 @@
     "sls": "LOCAL_PLUGIN=true SLS_DEBUG=* cd example && yarn && npm run build && cd ../",
     "slsDeploy": "LOCAL_PLUGIN=true SLS_DEBUG=* cd example && yarn && npm run deploy && cd ../",
     "test": "npm run eslint && npm run build && npm run jest && npm run sls",
-    "uglify": "uglifyjs dist/index.js --output dist/index.js --beautify",
+    "uglify": "./node_modules/uglify-es/bin/uglifyjs dist/index.js --output dist/index.js --beautify",
     "webpack": "webpack"
   },
   "version": "0.3.1"
