@@ -17,9 +17,20 @@ const prefix = path.resolve(__dirname, '../example');
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
 
 test('Can instantiate main class', () => {
+  // allows missing package.json next to serverless.yml
+  renameSync(
+    path.resolve(prefix, 'package.json'),
+    path.resolve(prefix, 'package1.json')
+  );
+  // start the plugin
   Plugin = new ServerlessPlugin(sls, {
     prefix
   });
+  // reset package.json
+  renameSync(
+    path.resolve(prefix, 'package1.json'),
+    path.resolve(prefix, 'package.json')
+  );
   expect(Plugin).toBeDefined();
 });
 

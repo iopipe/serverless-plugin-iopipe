@@ -10,7 +10,14 @@ const debug = debugLib('serverless-plugin-iopipe:track');
 
 export function getVisitor(pluginInstance) {
   // create consistent, yet anonymized id for usage stats
-  const pkg = fs.readJsonSync(join(pluginInstance.prefix, 'package.json'));
+  let pkg = {};
+  if (!pluginInstance.getOptions().noStats) {
+    try {
+      pkg = fs.readJsonSync(join(pluginInstance.prefix, 'package.json'));
+    } catch (err) {
+      _.noop();
+    }
+  }
   const str =
     pkg.author ||
     _.get(pkg, 'repository.url') ||
