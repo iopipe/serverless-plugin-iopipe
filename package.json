@@ -87,5 +87,5 @@
     "uglify": "./node_modules/uglify-es/bin/uglifyjs dist/index.js --output dist/index.js --beautify",
     "webpack": "webpack"
   },
-  "version": "0.3.2"
+  "version": "0.3.3"
 }
