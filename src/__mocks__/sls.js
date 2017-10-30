@@ -232,7 +232,7 @@ export default {
       }
     },
     package: {
-      artifact: 'example/.iopipe/.serverless/sls-iopoipe.zip'
+      artifact: 'testProject/.iopipe/.serverless/sls-iopoipe.zip'
     }
   },
   variables: {
@@ -1395,7 +1395,7 @@ export default {
     serverlessPath: `${process.env
       .npm_config_prefix}/node_modules/serverless/lib`,
     interactive: true,
-    servicePath: path.resolve(__dirname, '../../example')
+    servicePath: path.resolve(__dirname, '../../testProject')
   },
   classes: {},
   cli: {
