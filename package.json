@@ -44,7 +44,7 @@
   "jest": {
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "example",
+      "testProject",
       "dist"
     ]
   },
@@ -81,8 +81,8 @@
     "jest": "jest",
     "jestUpdateSnapshot": "jest --updateSnapshot",
     "prepublish": "npm run build",
-    "sls": "LOCAL_PLUGIN=true SLS_DEBUG=* cd example && yarn && npm run build && cd ../",
-    "slsDeploy": "LOCAL_PLUGIN=true SLS_DEBUG=* cd example && yarn && npm run deploy && cd ../",
+    "sls": "LOCAL_PLUGIN=true SLS_DEBUG=* cd testProject && yarn && npm run build && cd ../",
+    "slsDeploy": "LOCAL_PLUGIN=true SLS_DEBUG=* cd testProject && yarn && npm run deploy && cd ../",
     "test": "npm run eslint && npm run build && npm run jest && npm run sls",
     "uglify": "./node_modules/uglify-es/bin/uglifyjs dist/index.js --output dist/index.js --beautify",
     "webpack": "webpack"

@@ -1,5 +1,5 @@
 {
-  "name": "sls-example",
+  "name": "sls-unit-test",
   "version": "1.0.0",
   "description": "",
   "main": "handler.js",

@@ -2,7 +2,7 @@
 *.sublime-project
 *.sublime-workspace
 *.log
-example/.serverless/*
+testProject/.serverless/*
 v8-compile-cache-*
 jest/*
 coverage
