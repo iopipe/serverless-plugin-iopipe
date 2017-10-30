@@ -212,12 +212,10 @@ class ServerlessIOpipePlugin {
   checkToken() {
     const token = this.getOptions().token;
     if (!token) {
-      this.track({
-        action: 'token-missing'
-      });
-      throw new Error(
-        'No iopipe token found. Specify "iopipeToken" in the "custom" object in serverless.yml.'
-      );
+      const msg =
+        'You did not specify iopipeToken in your custom section of serverless.yml. iopipe will fall back to $IOPIPE_TOKEN in the lambda environment';
+      this.log(msg);
+      return msg;
     }
     return true;
   }
@@ -323,8 +321,9 @@ class ServerlessIOpipePlugin {
   createFile() {
     const debug = createDebugger('createFile');
     debug('Creating file');
-    const iopipeInclude = `const iopipe = require('iopipe')({token: '${this.getOptions()
-      .token}'});`;
+    let { token = process.env.IOPIPE_TOKEN } = this.getOptions();
+    token = token ? `'${token}'` : 'process.env.IOPIPE_TOKEN';
+    const iopipeInclude = `const iopipe = require('iopipe')({token: ${token}});`;
     const funcContents = _.chain(this.funcs)
       .map(outputHandlerCode)
       .join('\n')

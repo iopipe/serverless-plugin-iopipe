@@ -136,16 +136,10 @@ test('Throws error if iopipe is not found in valid package.json', () => {
   expect(targetErr.message).toMatch(/module not found/);
 });
 
-test('Throws error if iopipe token is not found', () => {
-  let targetErr = undefined;
-  try {
-    Plugin.getOptions({ token: '' });
-    Plugin.checkToken();
-  } catch (err) {
-    targetErr = err;
-  }
-  expect(targetErr).toBeInstanceOf(Error);
-  expect(targetErr.message).toMatch(/iopipe token found/);
+test('Warns if iopipe token is not found', () => {
+  Plugin.getOptions({ token: '' });
+  const msg = Plugin.checkToken();
+  expect(msg).toMatchSnapshot();
 });
 
 test('Does not upgrade if noUpgrade option is set', async () => {
