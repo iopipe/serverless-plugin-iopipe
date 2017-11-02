@@ -83,7 +83,6 @@ function runUpgrade(pluginInstance, packageManager, version, preCmd, debug) {
 class ServerlessIOpipePlugin {
   constructor(sls = {}, opts) {
     this.sls = sls;
-    this.setOptions(opts);
     this.prefix =
       opts.prefix ||
       this.sls.config.servicePath ||
@@ -139,6 +138,7 @@ class ServerlessIOpipePlugin {
   }
   async run() {
     const start = process.hrtime();
+    this.setOptions({});
     this.track({
       action: 'run-start'
     });

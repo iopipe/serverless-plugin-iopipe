@@ -39,9 +39,15 @@ test('Options module is a function', () => {
 });
 
 test('Options are set with defaults', () => {
-  const opts = Plugin.getOptions();
+  let opts = Plugin.getOptions();
+  expect(opts.testInterpolate).toBe(undefined);
+  // set the options state as if we were triggering Plugin.run()
+  sls.service.custom.iopipeTestInterpolate = 'wow-fun';
+  Plugin.setOptions({});
+  opts = Plugin.getOptions();
   expect(opts).toBeDefined();
   expect(opts).toHaveProperty('quote');
+  expect(opts.testInterpolate).toBe('wow-fun');
   expect(opts.noVerify).toBeUndefined();
 });
 
