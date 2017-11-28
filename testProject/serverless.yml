@@ -14,6 +14,7 @@ custom:
   iopipeExclude: excluded,foo
   iopipePlaceholder: false
   extraCustomKey: true
+  iopipeTestInterpolate: ${env:NODE_ENV}
 iamRoleStatements:
   - Effect: "Allow"
     Action:
