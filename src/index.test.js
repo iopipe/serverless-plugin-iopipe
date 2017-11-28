@@ -229,6 +229,13 @@ test('Can create iopipe handler file', async () => {
   expect(file).toMatchSnapshot();
 });
 
+test('Agent instantiation is blank if no iopipeToken in custom section of serverless.yml', async () => {
+  Plugin.getOptions({ token: '' });
+  const file = Plugin.createFile();
+  expect(file).toBeDefined();
+  expect(file.split('\n')[0]).toEqual("const iopipe = require('iopipe')();");
+});
+
 test('Handler file works', async () => {
   const { simple } = require(path.join(prefix, 'iopipe-handlers.js'));
   expect(simple).toBeInstanceOf(Function);

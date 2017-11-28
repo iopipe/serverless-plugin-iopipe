@@ -321,9 +321,9 @@ class ServerlessIOpipePlugin {
   createFile() {
     const debug = createDebugger('createFile');
     debug('Creating file');
-    let { token = process.env.IOPIPE_TOKEN } = this.getOptions();
-    token = token ? `'${token}'` : 'process.env.IOPIPE_TOKEN';
-    const iopipeInclude = `const iopipe = require('iopipe')({token: ${token}});`;
+    let { token } = this.getOptions();
+    const agentConfig = token ? `{token: '${token}'}` : '';
+    const iopipeInclude = `const iopipe = require('iopipe')(${agentConfig});`;
     const funcContents = _.chain(this.funcs)
       .map(outputHandlerCode)
       .join('\n')
@@ -333,6 +333,7 @@ class ServerlessIOpipePlugin {
       join(this.originalServicePath, `${this.handlerFileName}.js`),
       contents
     );
+    return contents;
   }
   assignHandlers() {
     const debug = createDebugger('assignHandlers');
