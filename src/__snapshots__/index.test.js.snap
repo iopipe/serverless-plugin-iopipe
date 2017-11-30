@@ -60,3 +60,5 @@ exports['syntaxError'] = function attemptSyntaxError6(event, context, callback) 
 };
 "
 `;
+
+exports[`Warns if iopipe token is not found 1`] = `"You did not specify iopipeToken in your custom section of serverless.yml. iopipe will fall back to $IOPIPE_TOKEN in the lambda environment"`;

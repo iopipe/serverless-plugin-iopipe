@@ -28,7 +28,7 @@
     "pre-commit": "^1.2.2",
     "prettier": "^1.4.4",
     "raw-loader": "^0.5.1",
-    "serverless": "^1.13.1",
+    "serverless": "1.23.0",
     "uglify-es": "^3.0.27",
     "universal-analytics": "^0.4.13",
     "uuid": "^3.0.1",

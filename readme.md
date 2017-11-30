@@ -33,13 +33,15 @@ plugins:
   - serverless-plugin-iopipe
 ```
 
-Add your IOpipe project token within the "custom" config in `serverless.yml`. [Where is the token?](https://dashboard.iopipe.com/install)
+Add your IOpipe project token within the "custom" config in `serverless.yml`. [Where is the token?](https://dashboard.iopipe.com/install) Alternatively, you can ensure that `$IOPIPE_TOKEN` is set in the lambda environment.
 ```yaml
 custom:
-  iopipeToken: YOUR_TOKEN HERE
+  iopipeToken: YOUR_TOKEN_HERE
 ```
 
 You're set! The plugin will run during an `sls deploy`.
+
+Check out an [example here](https://github.com/iopipe/serverless-plugin-iopipe/blob/master/example/serverless.yml).
 
 # How Does it Work?
 `serverless-plugin-iopipe` outputs a file that imports and wraps the function handlers defined in `serverless.yml` with IOpipe so you don't have to. It allows you to deploy and upgrade multiple functions simultaneously.
@@ -49,7 +51,7 @@ All options are set [in the "custom" config](https://serverless.com/framework/do
 
 #### `iopipeToken` (required)
 
-The token (clientId) of the project you would like to wrap your functions with.
+The token (clientId) of the project you would like to wrap your functions with. Falls back to `$IOPIPE_TOKEN` in the lambda environment.
 
 #### `iopipeNoVerify` (optional)
 
