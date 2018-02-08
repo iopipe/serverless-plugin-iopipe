@@ -1,5 +1,7 @@
 # IOpipe Serverless Framework Plugin (Beta)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/iopipe/serverless-plugin-iopipe.svg)](https://greenkeeper.io/)
+
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 [![CircleCI](https://circleci.com/gh/iopipe/serverless-plugin-iopipe/tree/master.svg?style=svg&circle-token=3787c8931aea4de4facb5fde25ae456f294f8cc1)](https://circleci.com/gh/iopipe/serverless-plugin-iopipe/tree/master)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
