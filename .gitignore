@@ -9,5 +9,4 @@ coverage
 dist
 .serverless_plugins
 testProjects/*/package-lock.json
-testProjects/*/yarn.lock
 iopipe-handlers.js
