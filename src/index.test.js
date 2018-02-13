@@ -12,7 +12,7 @@ const ServerlessPlugin = require('../dist/index');
 import sls from './__mocks__/sls';
 
 let Plugin = undefined;
-const prefix = path.resolve(__dirname, '../testProject');
+const prefix = path.resolve(__dirname, '../testProjects/default');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
 
@@ -180,7 +180,10 @@ async function upgrade(manager) {
         path.join(prefix, 'yarn.lock'),
         path.join(prefix, 'yarn1.lock')
       );
-    const upgradeResult = await Plugin.upgradeLib('0.2.1', 'cd testProject');
+    const upgradeResult = await Plugin.upgradeLib(
+      '0.2.1',
+      'cd testProjects/default'
+    );
     expect(upgradeResult).toBe(`success-upgrade-${manager}-0.2.1`);
     //reset back to original
   } catch (e) {
@@ -277,7 +280,7 @@ test('Syntax error handler is accounted for', async () => {
   expect(returnValue).toBeUndefined();
   expect(thrownError.message).toMatch(/Unexpected\stoken,\s/);
   expect(thrownError.message).toMatch(
-    /\/testProject\/handlers\/syntaxError\.js/
+    /\/testProjects\/default\/handlers\/syntaxError\.js/
   );
 });
 
