@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const _ = require('lodash');
 const spawn = require('cross-spawn');
@@ -11,7 +11,7 @@ folders.forEach(folder => {
     stdio: 'inherit'
   });
 
-  fs.copyFileSync(
+  fs.copySync(
     'dist/index.js',
     `testProjects/${folder}/.serverless_plugins/serverless-plugin-iopipe/index.js`
   );
