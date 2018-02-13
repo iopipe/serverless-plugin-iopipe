@@ -26,17 +26,24 @@ function getExitCode(stdout) {
   return _.chain(stdout).defaultTo('').split('\n').compact().last().value();
 }
 
-function getUpgradeVersion(packageManager, suppliedVersion, debug) {
+function getUpgradeVersion({
+  packageManager,
+  suppliedTargetVersion,
+  debug,
+  installed,
+  preCmd = ''
+}) {
   return new Promise((resolve, reject) => {
     exec(
-      `${packageManager} outdated iopipe && echo $?`,
+      `${preCmd}${preCmd &&
+        ' && '}${packageManager} outdated ${installed} && echo $?`,
       (err, stdout = '', stderr = '') => {
         const stdoutLines = _.chain(stdout)
           .split('\n')
           .map(s => _.trim(s))
           .value();
         const publishedVersions = _.chain(stdoutLines)
-          .find((str = '') => str.match(/iopipe/))
+          .find((str = '') => str.match(installed))
           .split(' ')
           .compact()
           .slice(1, 4)
@@ -44,7 +51,7 @@ function getUpgradeVersion(packageManager, suppliedVersion, debug) {
         const [current, wanted, latest] = publishedVersions;
         // auto-upgrade to 1.0 since its major, but non-breaking
         const version =
-          suppliedVersion ||
+          suppliedTargetVersion ||
           (current !== latest && latest.match(/^1\./) && latest) ||
           wanted;
         debug(`From ${packageManager} outdated command: `, stdoutLines);
@@ -114,6 +121,11 @@ class ServerlessIOpipePlugin {
       .mapKeys((val, key) => _.camelCase(key))
       .value();
     return this.options;
+  }
+  getInstalledPackageName({ dependencies } = this.package) {
+    return ['@iopipe/iopipe', '@iopipe/core', 'iopipe'].find(s =>
+      _.keys(dependencies).find(n => n === s)
+    );
   }
   log(arg1, ...rest) {
     //sls doesn't actually support multiple args to log?
@@ -188,14 +200,14 @@ class ServerlessIOpipePlugin {
     this.getOptions(val);
   }
   checkForLib(pack = this.package) {
-    const { dependencies } = pack;
+    const installed = this.getInstalledPackageName(pack);
     if (_.isEmpty(pack) || !_.isPlainObject(pack)) {
       this.track({
         action: 'no-package-skip-lib-check'
       });
       this.log('No package.json found, skipping lib check.');
       return 'no-package-skip';
-    } else if (_.isPlainObject(pack) && !dependencies.iopipe) {
+    } else if (_.isPlainObject(pack) && !installed) {
       if (this.getOptions().noVerify) {
         this.log('Skipping iopipe module installation check.');
         return 'no-verify-skip';
@@ -224,7 +236,6 @@ class ServerlessIOpipePlugin {
       return 'no-upgrade';
     }
     const debug = createDebugger('upgrade');
-    let wantedVersion = suppliedTargetVersion;
     const files = fs.readdirSync(this.prefix);
     const useYarn = _.includes(files, 'yarn.lock');
     const packageManager = useYarn ? 'yarn' : 'npm';
@@ -237,7 +248,13 @@ class ServerlessIOpipePlugin {
 
     // Get the version of iopipe that we need to upgrade to, if necessary
     try {
-      version = await getUpgradeVersion(packageManager, wantedVersion, debug);
+      version = await getUpgradeVersion({
+        packageManager,
+        suppliedTargetVersion,
+        debug,
+        installed: this.getInstalledPackageName(),
+        preCmd
+      });
       if (version === true) {
         this.log('You have the latest IOpipe library. Nice work!');
         return `success-no-upgrade-${packageManager}`;

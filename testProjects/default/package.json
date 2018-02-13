@@ -1,0 +1,22 @@
+{
+  "name": "sls-unit-test-default",
+  "version": "0.0.0-test",
+  "description": "",
+  "main": "handler.js",
+  "dependencies": {
+    "iopipe": "0.2.0",
+    "uuid": "^3.0.1"
+  },
+  "scripts": {
+    "build": "SLS_DEBUG=* IOPIPE_TOKEN='test-token' sls package",
+    "deploy": "sls deploy",
+    "greet": "sls iopipe",
+    "sls": "sls",
+    "test": "npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless": "^1.15.1"
+  }
+}

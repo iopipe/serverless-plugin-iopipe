@@ -1,10 +1,10 @@
 {
-  "name": "sls-unit-test",
-  "version": "1.0.0",
+  "name": "sls-unit-test-meta",
+  "version": "0.0.0-test",
   "description": "",
   "main": "handler.js",
   "dependencies": {
-    "iopipe": "0.2.0",
+    "@iopipe/iopipe": "^1.5.0",
     "uuid": "^3.0.1"
   },
   "scripts": {
@@ -12,7 +12,7 @@
     "deploy": "sls deploy",
     "greet": "sls iopipe",
     "sls": "sls",
-    "test": "npm run eslint"
+    "test": "npm run build"
   },
   "author": "",
   "license": "ISC",
