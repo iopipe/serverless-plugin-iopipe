@@ -3,7 +3,15 @@
   "bugs": {
     "url": "https://github.com/iopipe/serverless-plugin-iopipe/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "cosmiconfig": "^3",
+    "prettier": "^1.10.2",
+    "debug": "^2.6.8",
+    "fs-extra": "^5.0.0",
+    "lodash": "^4.17.4",
+    "universal-analytics": "^0.4.13",
+    "uuid": "^3.0.1"
+  },
   "description": "Serverless Plugin IOpipe",
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -19,21 +27,17 @@
     "babel-runtime": "^6.23.0",
     "circular-json": "^0.3.1",
     "cross-spawn": "^6.0.4",
-    "debug": "^2.6.8",
     "eslint": "^3.19.0",
     "eslint-plugin-jest": "^19.0.1",
     "eslint-plugin-prettier": "^2.1.2",
-    "fs-extra": "^5.0.0",
     "jest": "^19.0.2",
-    "lodash": "^4.17.4",
     "pre-commit": "^1.2.2",
-    "prettier": "^1.4.4",
     "raw-loader": "^0.5.1",
     "serverless": "1.23.0",
     "uglify-es": "^3.0.27",
-    "universal-analytics": "^0.4.13",
-    "uuid": "^3.0.1",
-    "webpack": "^2.6.1"
+    "webpack": "^2.6.1",
+    "webpack-node-externals": "^1.6.0",
+    "yargs": "^11.0.0"
   },
   "engines": {
     "node": ">=4.2.6"
@@ -43,10 +47,10 @@
   ],
   "homepage": "https://github.com/iopipe/serverless-plugin-iopipe#readme",
   "jest": {
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "testProject",
-      "dist"
+    "testPathIgnorePatterns": [
+      "node_modules/",
+      "dist/",
+      "testProjects/"
     ]
   },
   "keywords": [

@@ -1,4 +1,5 @@
 const path = require('path');
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   target: 'node',
@@ -9,6 +10,11 @@ module.exports = {
     libraryTarget: 'commonjs2',
     library: 'iopipe-serverless-plugin'
   },
+  externals: [
+    nodeExternals({
+      whitelist: [/babel-runtime/, /regenerator-runtime/, /core-js/]
+    })
+  ],
   module: {
     rules: [
       {

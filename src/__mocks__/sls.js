@@ -1392,8 +1392,9 @@ export default {
   },
   config: {
     serverless: '~',
-    serverlessPath: `${process.env
-      .npm_config_prefix}/node_modules/serverless/lib`,
+    serverlessPath: `${
+      process.env.npm_config_prefix
+    }/node_modules/serverless/lib`,
     interactive: true,
     servicePath: path.resolve(__dirname, '../../testProjects/default')
   },

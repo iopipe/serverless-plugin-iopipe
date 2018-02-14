@@ -24,7 +24,9 @@ export function getVisitor(pluginInstance) {
     pkg.name ||
     pkg.homepage ||
     uuid.v4();
-  const userId = createHash('md5').update(str).digest('hex');
+  const userId = createHash('md5')
+    .update(str)
+    .digest('hex');
   const visitor = ua('UA-73165042-2', userId, {
     strictCidFormat: false,
     https: true
