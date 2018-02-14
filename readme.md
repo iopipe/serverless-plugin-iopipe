@@ -17,13 +17,13 @@ A [serverless](http://www.serverless.com) plugin to automatically wrap your func
 # Install
 With [yarn](https://yarnpkg.com) (recommended) in project directory:
 ```
-yarn add iopipe
+yarn add @iopipe/iopipe
 yarn add serverless-plugin-iopipe --dev
 ```
 
 With npm in project directory:
 ```
-npm install iopipe
+npm install @iopipe/iopipe
 npm install serverless-plugin-iopipe --save-dev
 ```
 
@@ -84,9 +84,11 @@ By default, the plugin sends _anonymized_, non-identifying usage statistics to G
     - serverless-plugin-iopipe
     - serverless-webpack
   ```
+- Can I use IOpipe plugins?
+  - Yes, you can specify iopipe plugins through your [package.json file, or an iopipe.rc file](https://github.com/iopipe/iopipe-js-core#packagejson-configuration). You will have to make sure those plugins are installed into node_modules.
 
 ## Known Issues
-- This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
+- If you have lambda functions that are already wrapped by iopipe via code, you may experience unexpected results. Remove the iopipe wrapping code from those handlers.
 - If your `package.json` is located in a non-standard place, auto-upgrading may not work.
 - If attempting to use es6 modules natively i.e. `export function handler...`, may not work.
 
