@@ -4,6 +4,7 @@
   "description": "",
   "main": "handler.js",
   "dependencies": {
+    "adm-zip": "^0.4.7",
     "iopipe": "1.5.0",
     "uuid": "^3.0.1"
   },
@@ -12,7 +13,8 @@
     "deploy": "sls deploy",
     "greet": "sls iopipe",
     "sls": "sls",
-    "test": "npm run build"
+    "jest": "node ../../node_modules/jest/bin/jest.js",
+    "test": "npm run build && npm run jest"
   },
   "author": "",
   "license": "ISC",

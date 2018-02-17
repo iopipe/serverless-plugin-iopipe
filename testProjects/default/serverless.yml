@@ -1,4 +1,4 @@
-service: sls-iopipe
+service: sls-unit-test-default
 provider:
   name: aws
   runtime: nodejs6.10

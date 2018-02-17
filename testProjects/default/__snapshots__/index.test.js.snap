@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Generated file requires plugin and includes plugin inline 1`] = `
+"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\"});
+
+exports['simple'] = function attemptSimple0(event, context, callback) {
+  try {
+    return iopipe(require('./handlers/simple').handler)(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports['multiple'] = function attemptMultiple1(event, context, callback) {
+  try {
+    return iopipe(require('./handlers/multiple').handler)(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports['multipleDifferentHandler'] = function attemptMultipleDifferentHandler2(event, context, callback) {
+  try {
+    return iopipe(require('./handlers/multiple').differentNameHandler)(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports['es5'] = function attemptEs53(event, context, callback) {
+  try {
+    return iopipe(require('./handlers/es5').handler)(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports['multiple-dots-in-name'] = function attemptMultipleDotsInName4(event, context, callback) {
+  try {
+    return iopipe(require('./handlers/multiple.dots.in.name').handler)(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports['noModule'] = function attemptNoModule5(event, context, callback) {
+  try {
+    return iopipe(require('./handlers/noModule').handler)(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports['syntaxError'] = function attemptSyntaxError6(event, context, callback) {
+  try {
+    return iopipe(require('./handlers/syntaxError').handler)(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports['es5Named'] = function attemptEs5Named7(event, context, callback) {
+  try {
+    return iopipe(require('./handlers/es5Named').handler)(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
+"
+`;
