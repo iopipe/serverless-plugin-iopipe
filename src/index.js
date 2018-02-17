@@ -4,7 +4,6 @@ import { exec } from 'child_process';
 import { join } from 'path';
 import { default as debugLib } from 'debug';
 import cosmiconfig from 'cosmiconfig';
-import prettier from 'prettier';
 
 import { getVisitor, track } from './util/track';
 import hrMillis from './util/hrMillis';
@@ -368,14 +367,12 @@ class ServerlessIOpipePlugin {
     const debug = createDebugger('createFile');
     debug('Creating file');
     const { inlineConfig, requireLines } = this.getConfigFromCosmi();
-    const iopipeInclude = `${requireLines}const iopipe = require('${this.getInstalledPackageName()}')(\n${inlineConfig}\n);`;
+    const iopipeInclude = `${requireLines}const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
     const funcContents = _.chain(this.funcs)
       .map(outputHandlerCode)
       .join('\n')
       .value();
-    const contents = prettier.format(`${iopipeInclude}\n\n${funcContents}`, {
-      singleQuote: true
-    });
+    const contents = `${iopipeInclude}\n\n${funcContents}`;
     fs.writeFileSync(
       join(this.originalServicePath, `${this.handlerFileName}.js`),
       contents
