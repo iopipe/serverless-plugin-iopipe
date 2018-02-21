@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import AdmZip from 'adm-zip';
 
-test('Generated file requires plugin and includes plugin inline', () => {
+test('Generated file requires plugin and includes plugin inline', async () => {
   const zip = new AdmZip('./.serverless/sls-iopipe-cosmi-test.zip');
   expect(1).toBe(1);
   const handlerFile = _.find(
@@ -10,4 +10,10 @@ test('Generated file requires plugin and includes plugin inline', () => {
   );
   const fileContents = handlerFile.getData().toString('utf8');
   expect(fileContents).toMatchSnapshot();
+  /*eslint-disable no-eval*/
+  eval(fileContents);
+  const result = await new Promise(succeed => {
+    exports.simple({}, { succeed });
+  });
+  expect(result.statusCode).toEqual(200);
 });
