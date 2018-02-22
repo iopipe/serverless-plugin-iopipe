@@ -17,13 +17,13 @@ A [serverless](http://www.serverless.com) plugin to automatically wrap your func
 # Install
 With [yarn](https://yarnpkg.com) (recommended) in project directory:
 ```
-yarn add iopipe
+yarn add @iopipe/iopipe
 yarn add serverless-plugin-iopipe --dev
 ```
 
 With npm in project directory:
 ```
-npm install iopipe
+npm install @iopipe/iopipe
 npm install serverless-plugin-iopipe --save-dev
 ```
 
@@ -33,11 +33,14 @@ plugins:
   - serverless-plugin-iopipe
 ```
 
-Add your IOpipe project token within the "custom" config in `serverless.yml`. [Where is the token?](https://dashboard.iopipe.com/install) Alternatively, you can ensure that `$IOPIPE_TOKEN` is set in the lambda environment.
+You'll need to make sure your lambda functions have access to your [IOpipe project token](https://dashboard.iopipe.com/install). The recommended strategy is to use an environment variable. Just setup the variable in serverless.yml like any other.
+
 ```yaml
-custom:
-  iopipeToken: YOUR_TOKEN_HERE
+environment:
+  IOPIPE_TOKEN: ${env:IOPIPE_TOKEN}
 ```
+
+Alternatively, you can add an [iopipe configuration to your package.json](https://github.com/iopipe/iopipe-js-core#packagejson-configuration).
 
 You're set! The plugin will run during an `sls deploy`.
 
@@ -49,9 +52,9 @@ Check out an [example here](https://github.com/iopipe/serverless-plugin-iopipe/b
 # Options
 All options are set [in the "custom" config](https://serverless.com/framework/docs/providers/aws/guide/plugins#installing-plugins) in `serverless.yml`. [See Example](https://github.com/iopipe/serverless-plugin-iopipe/blob/master/example/serverless.yml)
 
-#### `iopipeToken` (required)
+#### `iopipeToken` (optional)
 
-The token (clientId) of the project you would like to wrap your functions with. Falls back to `$IOPIPE_TOKEN` in the lambda environment.
+If not using the environment variable of `$IOPIPE_TOKEN`, the token of the project you would like to wrap your functions with.
 
 #### `iopipeNoVerify` (optional)
 
@@ -67,18 +70,25 @@ When auto-upgrading, Yarn will be used in place of NPM if a yarn.lock file is fo
 
 #### `iopipeExclude` (optional)
 
-Exclude certain functions from the plugin. Comma separated string.
-
-#### `iopipePlaceholder` (optional)
-
-Use `process.env.IOPIPE_TOKEN` as a placeholder variable to allow the token to be configured via environment variables in Serverless, AWS CLI, or AWS Console instead of embedding the token string directly.
+Exclude certain lambda functions from being wrapped by the plugin. Comma separated string.
 
 #### `iopipeNoStats` (optional)
 
 By default, the plugin sends _anonymized_, non-identifying usage statistics to Google Analytics. IOpipe will use this info to prioritize updates and enhancements to the plugin. If you'd like to opt out of this, just set this option.
 
+## FAQ
+- Does this work with webpack?
+  - Yes, you can use this plugin with webpack or serverless plugins utilizing webpack. For best results, make sure this plugin is specified _before_ the webpack plugins in serverless.yml, i.e.
+  ```yaml
+  plugins:
+    - serverless-plugin-iopipe
+    - serverless-webpack
+  ```
+- Can I use IOpipe plugins?
+  - Yes, you can specify iopipe plugins through your [package.json file, or an iopipe.rc file](https://github.com/iopipe/iopipe-js-core#packagejson-configuration). You will have to make sure those plugins are installed into node_modules.
+
 ## Known Issues
-- This plugin attempts to skip handlers that are already wrapped, but edge cases my arise, especially if you `require` the iopipe module outside of the handler file.
+- If you have lambda functions that are already wrapped by iopipe via code, you may experience unexpected results. Remove the iopipe wrapping code from those handlers.
 - If your `package.json` is located in a non-standard place, auto-upgrading may not work.
 - If attempting to use es6 modules natively i.e. `export function handler...`, may not work.
 

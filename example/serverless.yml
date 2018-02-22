@@ -11,3 +11,5 @@ environment:
 functions:
   hello:
     handler: index.handler
+custom:
+  iopipeNoVerify: true

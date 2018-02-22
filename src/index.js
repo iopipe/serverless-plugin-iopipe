@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import { exec } from 'child_process';
 import { join } from 'path';
 import { default as debugLib } from 'debug';
+import cosmiconfig from 'cosmiconfig';
 
 import { getVisitor, track } from './util/track';
 import hrMillis from './util/hrMillis';
@@ -23,7 +24,12 @@ function outputHandlerCode(obj = {}, index) {
 }
 
 function getExitCode(stdout) {
-  return _.chain(stdout).defaultTo('').split('\n').compact().last().value();
+  return _.chain(stdout)
+    .defaultTo('')
+    .split('\n')
+    .compact()
+    .last()
+    .value();
 }
 
 function getUpgradeVersion({
@@ -335,12 +341,33 @@ class ServerlessIOpipePlugin {
       throw new Error(err);
     }
   }
+  getConfigFromCosmi() {
+    let { token } = this.getOptions();
+    const { config: cosmi = {} } =
+      cosmiconfig('iopipe', {
+        cache: false,
+        sync: true,
+        rcExtensions: true
+      }).load(process.cwd()) || {};
+    const requireLines = _.chain(cosmi.plugins)
+      .map(p => `require('${p}');\n`)
+      .join()
+      .defaultTo('')
+      .value();
+    const inlineConfigObject = _.pickBy(_.assign({}, cosmi, { token }));
+    const inlineConfig = _.isEmpty(inlineConfigObject)
+      ? ''
+      : JSON.stringify(inlineConfigObject);
+    return {
+      requireLines,
+      inlineConfig
+    };
+  }
   createFile() {
     const debug = createDebugger('createFile');
     debug('Creating file');
-    let { token } = this.getOptions();
-    const agentConfig = token ? `{token: '${token}'}` : '';
-    const iopipeInclude = `const iopipe = require('iopipe')(${agentConfig});`;
+    const { inlineConfig, requireLines } = this.getConfigFromCosmi();
+    const iopipeInclude = `${requireLines}const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
     const funcContents = _.chain(this.funcs)
       .map(outputHandlerCode)
       .join('\n')

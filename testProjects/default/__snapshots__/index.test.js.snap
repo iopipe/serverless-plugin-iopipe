@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Can create iopipe handler file 1`] = `
-"const iopipe = require('iopipe')({\\"token\\":\\"TEST_TOKEN\\"});
+exports[`Generated file requires plugin and includes plugin inline 1`] = `
+"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\"});
 
 exports['simple'] = function attemptSimple0(event, context, callback) {
   try {
@@ -58,7 +58,13 @@ exports['syntaxError'] = function attemptSyntaxError6(event, context, callback) 
     throw err;
   }
 };
+
+exports['es5Named'] = function attemptEs5Named7(event, context, callback) {
+  try {
+    return iopipe(require('./handlers/es5Named').handler)(event, context, callback);
+  } catch (err) {
+    throw err;
+  }
+};
 "
 `;
-
-exports[`Warns if iopipe token is not found 1`] = `"You did not specify iopipeToken in your custom section of serverless.yml. iopipe will fall back to $IOPIPE_TOKEN in the lambda environment"`;

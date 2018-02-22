@@ -1,11 +1,12 @@
 {
-  "name": "sls-unit-test-default",
+  "name": "sls-unit-test-cosmi",
   "version": "0.0.0-test",
   "description": "",
   "main": "handler.js",
   "dependencies": {
+    "@iopipe/iopipe": "^1.5.0",
+    "@iopipe/profiler": "^0.1.0",
     "adm-zip": "^0.4.7",
-    "iopipe": "1.5.0",
     "uuid": "^3.0.1"
   },
   "scripts": {
@@ -20,5 +21,10 @@
   "license": "ISC",
   "devDependencies": {
     "serverless": "^1.15.1"
+  },
+  "iopipe": {
+    "plugins": [
+      "@iopipe/profiler"
+    ]
   }
 }
