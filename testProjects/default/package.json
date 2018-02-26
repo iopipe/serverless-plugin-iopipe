@@ -13,8 +13,8 @@
     "deploy": "sls deploy",
     "greet": "sls iopipe",
     "sls": "sls",
-    "jest": "node ../../node_modules/jest/bin/jest.js",
-    "test": "npm run build && npm run jest"
+    "test": "node ../../node_modules/jest/bin/jest.js",
+    "validate": "npm run build && npm run jest"
   },
   "author": "",
   "license": "ISC",

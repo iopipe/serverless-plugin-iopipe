@@ -26,7 +26,20 @@ folders.forEach(folder => {
     `testProjects/${folder}/.serverless_plugins/serverless-plugin-iopipe/index.js`
   );
 
-  spawn.sync('yarn', ['--cwd', `testProjects/${folder}`, 'test'], {
+  spawn.sync('yarn', ['--cwd', `testProjects/${folder}`, 'build'], {
     stdio: 'inherit'
   });
+
+  spawn.sync(
+    'yarn',
+    _.compact([
+      '--cwd',
+      `testProjects/${folder}`,
+      'test',
+      (argv.u || argv.updateSnapshot) && '--updateSnapshot'
+    ]),
+    {
+      stdio: 'inherit'
+    }
+  );
 });
