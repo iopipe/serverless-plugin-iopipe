@@ -27,5 +27,13 @@ Briefly describe the problem you are having in a few paragraphs.
 
 **Describe the results you expected:**
 
+**Application and library versions**
+<!--
+  Please list:
+  - version of the Serverless Framework.
+  - version of @iopipe/iopipe
+  - version of serverless-plugin-iopipe
+  - any other serverless framework plugins enabled
+-->
 
 **Additional information you deem important (e.g. issue happens only occasionally):**
