@@ -6,8 +6,7 @@ exports[`Generated file requires plugin and includes plugin inline 1`] = `
 exports['simple'] = function attemptSimple0(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      const mod = require('./handlers/simple');
-      return mod.handler(evt, ctx, cb);
+      return require('./handlers/simple').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -17,8 +16,7 @@ exports['simple'] = function attemptSimple0(event, context, callback) {
 exports['multiple'] = function attemptMultiple1(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      const mod = require('./handlers/multiple');
-      return mod.handler(evt, ctx, cb);
+      return require('./handlers/multiple').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -28,8 +26,7 @@ exports['multiple'] = function attemptMultiple1(event, context, callback) {
 exports['multipleDifferentHandler'] = function attemptMultipleDifferentHandler2(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      const mod = require('./handlers/multiple');
-      return mod.differentNameHandler(evt, ctx, cb);
+      return require('./handlers/multiple').differentNameHandler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -39,8 +36,7 @@ exports['multipleDifferentHandler'] = function attemptMultipleDifferentHandler2(
 exports['es5'] = function attemptEs53(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      const mod = require('./handlers/es5');
-      return mod.handler(evt, ctx, cb);
+      return require('./handlers/es5').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -50,8 +46,7 @@ exports['es5'] = function attemptEs53(event, context, callback) {
 exports['multiple-dots-in-name'] = function attemptMultipleDotsInName4(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      const mod = require('./handlers/multiple.dots.in.name');
-      return mod.handler(evt, ctx, cb);
+      return require('./handlers/multiple.dots.in.name').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -61,8 +56,7 @@ exports['multiple-dots-in-name'] = function attemptMultipleDotsInName4(event, co
 exports['noModule'] = function attemptNoModule5(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      const mod = require('./handlers/noModule');
-      return mod.handler(evt, ctx, cb);
+      return require('./handlers/noModule').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -72,8 +66,7 @@ exports['noModule'] = function attemptNoModule5(event, context, callback) {
 exports['syntaxError'] = function attemptSyntaxError6(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      const mod = require('./handlers/syntaxError');
-      return mod.handler(evt, ctx, cb);
+      return require('./handlers/syntaxError').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -83,8 +76,7 @@ exports['syntaxError'] = function attemptSyntaxError6(event, context, callback) 
 exports['es5Named'] = function attemptEs5Named7(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      const mod = require('./handlers/es5Named');
-      return mod.handler(evt, ctx, cb);
+      return require('./handlers/es5Named').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;

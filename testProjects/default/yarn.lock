@@ -10,8 +10,8 @@
     "@iopipe/trace" "^0.3.0"
 
 "@iopipe/core@^1.6.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@iopipe/core/-/core-1.7.0.tgz#f2496e97b96d5ff800a682f4eaf1ba31849eafbc"
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@iopipe/core/-/core-1.8.0.tgz#8b06c4949297b66f31cc699aa078ef9bb407c57b"
   dependencies:
     cosmiconfig "^4"
     lodash.uniqby "^4.7.0"
@@ -34,8 +34,8 @@ adm-zip@^0.4.7:
   resolved "https://registry.yarnpkg.com/adm-zip/-/adm-zip-0.4.7.tgz#8606c2cbf1c426ce8c8ec00174447fd49b6eafc1"
 
 argparse@^1.0.7:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/argparse/-/argparse-1.0.9.tgz#73d83bc263f86e97f8cc4f6bae1b0e90a7d22c86"
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/argparse/-/argparse-1.0.10.tgz#bcd6791ea5ae09725e17e5ad988134cd40b3d911"
   dependencies:
     sprintf-js "~1.0.2"
 
@@ -58,7 +58,7 @@ esprima@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.0.tgz#4499eddcd1110e0b218bacf2fa7f7f59f55ca804"
 
-iopipe@1.6.0, iopipe@^1.0.0:
+iopipe@^1.0.0, iopipe@^1.5.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/iopipe/-/iopipe-1.6.0.tgz#094526617f66a7a3bc8620356e47ffccb2362055"
   dependencies:
@@ -74,8 +74,8 @@ is-directory@^0.3.1:
   resolved "https://registry.yarnpkg.com/is-directory/-/is-directory-0.3.1.tgz#61339b6f2475fc772fd9c9d83f5c8575dc154ae1"
 
 js-yaml@^3.9.0:
-  version "3.10.0"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.10.0.tgz#2e78441646bd4682e963f22b6e92823c309c62dc"
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.11.0.tgz#597c1a8bd57152f26d622ce4117851a51f5ebaef"
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"

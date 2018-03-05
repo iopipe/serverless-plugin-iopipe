@@ -6,9 +6,9 @@ const iopipe = require('@iopipe/iopipe')({\\"plugins\\":[\\"@iopipe/profiler\\"]
 
 exports['simple'] = function attemptSimple0(event, context, callback) {
   try {
-    return iopipe((evt, ctx, cb) =>
-      require('./handlers/simple').handler(evt, ctx, cb)
-    )(event, context, callback);
+    return iopipe((evt, ctx, cb) => {
+      return require('./handlers/simple').handler(evt, ctx, cb);
+    })(event, context, callback);
   } catch (err) {
     throw err;
   }
