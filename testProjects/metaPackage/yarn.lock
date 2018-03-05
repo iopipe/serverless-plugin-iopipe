@@ -61,7 +61,7 @@ esprima@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.0.tgz#4499eddcd1110e0b218bacf2fa7f7f59f55ca804"
 
-iopipe@1.6.0, iopipe@^1.0.0:
+iopipe@^1.0.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/iopipe/-/iopipe-1.6.0.tgz#094526617f66a7a3bc8620356e47ffccb2362055"
   dependencies:
