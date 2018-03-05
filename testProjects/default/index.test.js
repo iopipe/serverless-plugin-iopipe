@@ -2,7 +2,6 @@ import _ from 'lodash';
 import AdmZip from 'adm-zip';
 
 process.env.IOPIPE_TOKEN = 'test_token';
-process.env.IOPIPE_DEBUG = true;
 
 test('Generated file requires plugin and includes plugin inline', async () => {
   const zip = new AdmZip('./.serverless/sls-unit-test-default.zip');
@@ -22,5 +21,5 @@ test('Generated file requires plugin and includes plugin inline', async () => {
   const syntaxErrorResult = await new Promise(succeed => {
     exports.syntaxError({}, {}, succeed);
   });
-  console.log(syntaxErrorResult);
+  expect(syntaxErrorResult.message).toMatch(/Unexpected\stoken,\s/);
 });
