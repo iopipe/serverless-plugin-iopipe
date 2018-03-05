@@ -7,7 +7,6 @@
     "@iopipe/iopipe": "^1.5.0",
     "@iopipe/profiler": "^0.1.0",
     "adm-zip": "^0.4.7",
-    "iopipe": "^1.6.0",
     "uuid": "^3.0.1"
   },
   "scripts": {
