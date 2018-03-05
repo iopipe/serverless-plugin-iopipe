@@ -258,6 +258,8 @@ test('Handler file works', async () => {
 });
 
 test('Syntax error handler is accounted for', async () => {
+  // need to include token for lib not to simply return the user func
+  process.env.IOPIPE_TOKEN = 'test_token';
   const { syntaxError } = require(path.join(prefix, 'iopipe-handlers.js'));
   expect(syntaxError).toBeInstanceOf(Function);
   const returnValue = await new Promise(resolve => {
