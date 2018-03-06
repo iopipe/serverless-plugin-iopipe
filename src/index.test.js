@@ -181,10 +181,10 @@ async function upgrade(manager) {
         path.join(prefix, 'yarn1.lock')
       );
     const upgradeResult = await Plugin.upgradeLib(
-      '0.2.1',
+      '1.6.0',
       'cd testProjects/default'
     );
-    expect(upgradeResult).toBe(`success-upgrade-${manager}-0.2.1`);
+    expect(upgradeResult).toBe(`success-upgrade-${manager}-1.6.0`);
     //reset back to original
   } catch (e) {
     err = e;
@@ -258,28 +258,15 @@ test('Handler file works', async () => {
 });
 
 test('Syntax error handler is accounted for', async () => {
+  // need to include token for lib not to simply return the user func
+  process.env.IOPIPE_TOKEN = 'test_token';
   const { syntaxError } = require(path.join(prefix, 'iopipe-handlers.js'));
   expect(syntaxError).toBeInstanceOf(Function);
-  const syntaxErrorPromise = new Promise((resolve, reject) => {
-    // run the handler with dummy event / context
-    syntaxError(
-      {},
-      {
-        succeed: resolve,
-        fail: reject
-      }
-    );
+  const returnValue = await new Promise(resolve => {
+    syntaxError({}, {}, resolve);
   });
-  let returnValue = undefined;
-  let thrownError = undefined;
-  try {
-    returnValue = await syntaxErrorPromise;
-  } catch (err) {
-    thrownError = err;
-  }
-  expect(returnValue).toBeUndefined();
-  expect(thrownError.message).toMatch(/Unexpected\stoken,\s/);
-  expect(thrownError.message).toMatch(
+  expect(returnValue.message).toMatch(/Unexpected\stoken,\s/);
+  expect(returnValue.message).toMatch(
     /\/testProjects\/default\/handlers\/syntaxError\.js/
   );
 });

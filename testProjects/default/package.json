@@ -5,20 +5,15 @@
   "main": "handler.js",
   "dependencies": {
     "adm-zip": "^0.4.7",
-    "iopipe": "1.5.0",
+    "iopipe": "^1.5.0",
     "uuid": "^3.0.1"
   },
   "scripts": {
-    "build": "SLS_DEBUG=* IOPIPE_TOKEN='test-token' sls package",
-    "deploy": "sls deploy",
-    "greet": "sls iopipe",
-    "sls": "sls",
-    "jest": "node ../../node_modules/jest/bin/jest.js",
-    "test": "npm run build && npm run jest"
+    "build": "SLS_DEBUG=* IOPIPE_TOKEN='test-token' node ../../node_modules/serverless/bin/serverless package",
+    "test": "node ../../node_modules/jest/bin/jest.js",
+    "validate": "npm run build && npm run jest"
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "serverless": "^1.15.1"
-  }
+  "devDependencies": {}
 }
