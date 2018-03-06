@@ -4,6 +4,8 @@ provider:
   runtime: nodejs6.10
   stage: prod
   region: us-west-2
+environment:
+  IOPIPE_TOKEN: ${env:IOPIPE_TOKEN}
 plugins:
   - serverless-plugin-iopipe/index.js
 functions:

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "echo 'No need to build'",
-    "invoke": "SLS_DEBUG=* node ../../node_modules/serverless/bin/serverless invoke local -f simple",
+    "invoke": "SLS_DEBUG=* IOPIPE_TOKEN=test_token node ../../node_modules/serverless/bin/serverless invoke local -f simple",
     "test": "npm run invoke"
   },
   "author": "",
