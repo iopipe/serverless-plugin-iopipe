@@ -114,7 +114,9 @@ class ServerlessIOpipePlugin {
     };
     this.hooks = {
       'before:package:createDeploymentArtifacts': this.run.bind(this),
+      'before:invoke:local:invoke': this.run.bind(this),
       'after:package:createDeploymentArtifacts': this.finish.bind(this),
+      'after:invoke:local:invoke': this.finish.bind(this),
       'iopipe:run': this.greeting.bind(this)
     };
   }
@@ -142,17 +144,9 @@ class ServerlessIOpipePlugin {
     return track(this, kwargs);
   }
   greeting() {
-    this.log('Welcome to the IOpipe Serverless plugin.');
-    const { token } = this.getOptions();
-    if (token) {
-      this.log(
-        'You have your token specified, so you are all set! Just run sls deploy for the magic.'
-      );
-    } else {
-      this.log(
-        'Whoops! You are missing the iopipeToken custom variable in your serverless.yml'
-      );
-    }
+    this.log(
+      'Welcome to the IOpipe Serverless plugin. You can use this plugin for sls invoke local or sls deploy. Make sure you have the $IOPIPE_TOKEN environment variable set documented here: https://github.com/iopipe/serverless-plugin-iopipe#install.'
+    );
   }
   async run() {
     const start = process.hrtime();

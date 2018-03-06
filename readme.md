@@ -21,7 +21,7 @@ yarn add @iopipe/iopipe
 yarn add serverless-plugin-iopipe --dev
 ```
 
-With npm in project directory:
+OR with npm in project directory:
 ```
 npm install @iopipe/iopipe
 npm install serverless-plugin-iopipe --save-dev
@@ -42,7 +42,7 @@ environment:
 
 Alternatively, you can add an [iopipe configuration to your package.json](https://github.com/iopipe/iopipe-js-core#packagejson-configuration).
 
-You're set! The plugin will run during an `sls deploy`.
+You're set! The plugin will run during an `sls deploy` or during `sls invoke local`.
 
 Check out an [example here](https://github.com/iopipe/serverless-plugin-iopipe/blob/master/example/serverless.yml).
 
@@ -50,7 +50,7 @@ Check out an [example here](https://github.com/iopipe/serverless-plugin-iopipe/b
 `serverless-plugin-iopipe` outputs a file that imports and wraps the function handlers defined in `serverless.yml` with IOpipe so you don't have to. It allows you to deploy and upgrade multiple functions simultaneously.
 
 # Options
-All options are set [in the "custom" config](https://serverless.com/framework/docs/providers/aws/guide/plugins#installing-plugins) in `serverless.yml`. [See Example](https://github.com/iopipe/serverless-plugin-iopipe/blob/master/example/serverless.yml)
+Beyond the required $IOPIPE_TOKEN environment variable, some options can be set [in the "custom" config](https://serverless.com/framework/docs/providers/aws/guide/plugins#installing-plugins) in `serverless.yml`. [See Example](https://github.com/iopipe/serverless-plugin-iopipe/blob/master/example/serverless.yml)
 
 #### `iopipeToken` (optional)
 
