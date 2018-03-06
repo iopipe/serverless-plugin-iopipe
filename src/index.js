@@ -345,7 +345,7 @@ class ServerlessIOpipePlugin {
       }).load(process.cwd()) || {};
     const requireLines = _.chain(cosmi.plugins)
       .map(p => `require('${p}');\n`)
-      .join()
+      .join('')
       .defaultTo('')
       .value();
     const inlineConfigObject = _.pickBy(_.assign({}, cosmi, { token }));

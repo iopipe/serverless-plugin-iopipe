@@ -1,8 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Generated file requires plugin and includes plugin inline 1`] = `
-"require('@iopipe/profiler');
-const iopipe = require('@iopipe/iopipe')({\\"plugins\\":[\\"@iopipe/profiler\\"],\\"token\\":\\"test-token\\"});
+"require('@iopipe/event-info');
+require('@iopipe/trace');
+const iopipe = require('@iopipe/core')({\\"plugins\\":[\\"@iopipe/event-info\\",\\"@iopipe/trace\\"],\\"token\\":\\"test-token\\"});
 
 exports['simple'] = function attemptSimple0(event, context, callback) {
   try {

@@ -22,6 +22,7 @@ function resultPush({ status } = {}) {
 }
 
 folders.forEach(folder => {
+  console.log(`Running tests for ${folder}...`);
   !argv.noInstall &&
     resultPush(
       spawn.sync('yarn', ['install', '--cwd', `testProjects/${folder}`], {
@@ -57,6 +58,7 @@ folders.forEach(folder => {
       }
     )
   );
+  console.log(`Finished tests for ${folder}.`);
 });
 
 process.exit(_.max(results) || 0);
