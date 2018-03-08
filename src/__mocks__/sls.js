@@ -1,6 +1,7 @@
+/*eslint-disable max-lines*/
+/*eslint-disable quotes*/
 import path from 'path';
 
-/*eslint-disable quotes*/
 export default {
   providers: {
     aws: {
@@ -172,6 +173,7 @@ export default {
     provider: {
       stage: 'prod',
       region: 'us-west-2',
+      /*eslint-disable no-template-curly-in-string*/
       variableSyntax: '\\${([ :a-zA-Z0-9._,\\-\\/\\(\\)]+?)}',
       name: 'aws',
       runtime: 'nodejs6.10',

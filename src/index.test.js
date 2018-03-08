@@ -1,3 +1,5 @@
+/*eslint-disable import/no-dynamic-require*/
+import path from 'path';
 import _ from 'lodash';
 import {
   copySync,
@@ -6,12 +8,12 @@ import {
   readdirSync,
   readFileSync
 } from 'fs-extra';
-import path from 'path';
 
-const ServerlessPlugin = require('../dist/index');
 import sls from './__mocks__/sls';
 
-let Plugin = undefined;
+const ServerlessPlugin = require('../dist/index');
+
+let Plugin;
 const prefix = path.resolve(__dirname, '../testProjects/default');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
@@ -40,7 +42,7 @@ test('Options module is a function', () => {
 
 test('Options are set with defaults', () => {
   let opts = Plugin.getOptions();
-  expect(opts.testInterpolate).toBe(undefined);
+  expect(opts.testInterpolate).toBeUndefined();
   // set the options state as if we were triggering Plugin.run()
   sls.service.custom.iopipeTestInterpolate = 'wow-fun';
   Plugin.setOptions({});
@@ -126,7 +128,7 @@ test('Skips lib check if opts specify noVerify', () => {
 });
 
 test('Throws error if iopipe is not found in valid package.json', () => {
-  let targetErr = undefined;
+  let targetErr;
   try {
     Plugin.checkForLib({ dependencies: { lodash: '4.17.4' } });
   } catch (err) {
@@ -168,7 +170,7 @@ test('Uses yarn if available lockfile found (no upgrade needed)', async () => {
 });
 
 async function upgrade(manager) {
-  let err = undefined;
+  let err;
   try {
     //prepare dummy new package.json
     copySync(
@@ -224,7 +226,7 @@ test('Gets funcs', () => {
   });
 });
 
-test('Can create iopipe handler file', async () => {
+test('Can create iopipe handler file', () => {
   Plugin.getOptions({ token: 'TEST_TOKEN' });
   Plugin.createFile();
   const file = readFileSync(path.join(prefix, 'iopipe-handlers.js'), 'utf8');
@@ -232,7 +234,7 @@ test('Can create iopipe handler file', async () => {
   expect(file).toMatchSnapshot();
 });
 
-test('Agent instantiation is blank if no iopipeToken in custom section of serverless.yml', async () => {
+test('Agent instantiation is blank if no iopipeToken in custom section of serverless.yml', () => {
   Plugin.getOptions({ token: '' });
   const file = Plugin.createFile();
   expect(file).toBeDefined();

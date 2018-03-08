@@ -1,4 +1,4 @@
-module.exports.handler = function handle(event, context, callback){
+module.exports.handler = function handler(event, context, callback) {
   const response = {
     statusCode: 200,
     body: JSON.stringify({

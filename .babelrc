@@ -1,14 +1,11 @@
 {
-  "comments": false,
   "presets": [
+    "./node_modules/@iopipe/scripts/dist/config/babelrc.js",
     ["env", {
       "targets": {
-        "node": ["4.2"]
-      }
-    }],
-    "stage-0",
-  ],
-  "plugins": [
-    ["transform-runtime", {"polyfill": false, "regenerator": true}]
+        "node": ["4.3"]
+      },
+      "exclude": ["transform-regenerator"]
+    }]
   ]
 }

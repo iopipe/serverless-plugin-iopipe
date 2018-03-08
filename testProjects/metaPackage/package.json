@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "SLS_DEBUG=* IOPIPE_TOKEN='test-token' node ../../node_modules/serverless/bin/serverless package",
-    "test": "npm run build",
+    "test": "node ../../node_modules/jest/bin/jest.js",
     "validate": "npm run build && npm run test"
   },
   "author": "",

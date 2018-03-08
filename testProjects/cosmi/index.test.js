@@ -1,3 +1,4 @@
+/*eslint-disable import/no-extraneous-dependencies*/
 import _ from 'lodash';
 import AdmZip from 'adm-zip';
 
@@ -15,5 +16,5 @@ test('Generated file requires plugin and includes plugin inline', async () => {
   const result = await new Promise(succeed => {
     exports.simple({}, { succeed });
   });
-  expect(result.statusCode).toEqual(200);
+  expect(result).toEqual(200);
 });

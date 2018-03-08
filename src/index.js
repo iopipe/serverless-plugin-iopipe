@@ -1,13 +1,13 @@
-import _ from 'lodash';
-import fs from 'fs-extra';
 import { exec } from 'child_process';
 import { join } from 'path';
-import { default as debugLib } from 'debug';
+import _ from 'lodash';
+import fs from 'fs-extra';
+import debugLib from 'debug';
 import cosmiconfig from 'cosmiconfig';
 
 import { getVisitor, track } from './util/track';
 import hrMillis from './util/hrMillis';
-import handlerCode from './handlerCode.js';
+import handlerCode from './handlerCode';
 
 function createDebugger(suffix) {
   return debugLib(`serverless-plugin-iopipe:${suffix}`);
@@ -15,7 +15,7 @@ function createDebugger(suffix) {
 
 function outputHandlerCode(obj = {}, index) {
   const { name, relativePath, method } = obj;
-  const fnName = _.camelCase('attempt-' + name) + index;
+  const fnName = _.camelCase(`attempt-${name}`) + index;
   return handlerCode
     .replace(/EXPORT_NAME/g, name)
     .replace(/FUNCTION_NAME/g, fnName)
@@ -44,6 +44,7 @@ function getUpgradeVersion({
       `${preCmd}${preCmd &&
         ' && '}${packageManager} outdated ${installed} && echo $?`,
       (err, stdout = '', stderr = '') => {
+        _.noop(err);
         const stdoutLines = _.chain(stdout)
           .split('\n')
           .map(s => _.trim(s))
@@ -114,7 +115,9 @@ class ServerlessIOpipePlugin {
     };
     this.hooks = {
       'before:package:createDeploymentArtifacts': this.run.bind(this),
+      'before:invoke:local:invoke': this.run.bind(this),
       'after:package:createDeploymentArtifacts': this.finish.bind(this),
+      'after:invoke:local:invoke': this.finish.bind(this),
       'iopipe:run': this.greeting.bind(this)
     };
   }
@@ -135,24 +138,18 @@ class ServerlessIOpipePlugin {
   }
   log(arg1, ...rest) {
     //sls doesn't actually support multiple args to log?
+    /*eslint-disable no-console*/
     const logger = this.sls.cli.log || console.log;
+    /*eslint-enable no-console*/
     logger.call(this.sls.cli, `serverless-plugin-iopipe: ${arg1}`, ...rest);
   }
   track(kwargs) {
     return track(this, kwargs);
   }
   greeting() {
-    this.log('Welcome to the IOpipe Serverless plugin.');
-    const { token } = this.getOptions();
-    if (token) {
-      this.log(
-        'You have your token specified, so you are all set! Just run sls deploy for the magic.'
-      );
-    } else {
-      this.log(
-        'Whoops! You are missing the iopipeToken custom variable in your serverless.yml'
-      );
-    }
+    this.log(
+      'Welcome to the IOpipe Serverless plugin. You can use this plugin for sls invoke local or sls deploy. Make sure you have the $IOPIPE_TOKEN environment variable set documented here: https://github.com/iopipe/serverless-plugin-iopipe#install.'
+    );
   }
   async run() {
     const start = process.hrtime();
@@ -250,7 +247,7 @@ class ServerlessIOpipePlugin {
       action: 'lib-upgrade',
       label: packageManager
     });
-    let version = undefined;
+    let version;
 
     // Get the version of iopipe that we need to upgrade to, if necessary
     try {
@@ -337,12 +334,14 @@ class ServerlessIOpipePlugin {
         action: 'get-funcs-fail',
         value: err
       });
+      /*eslint-disable no-console*/
       console.error('Failed to read functions from serverless.yml.');
+      /*eslint-enable no-console*/
       throw new Error(err);
     }
   }
   getConfigFromCosmi() {
-    let { token } = this.getOptions();
+    const { token } = this.getOptions();
     const { config: cosmi = {} } =
       cosmiconfig('iopipe', {
         cache: false,
@@ -351,7 +350,7 @@ class ServerlessIOpipePlugin {
       }).load(process.cwd()) || {};
     const requireLines = _.chain(cosmi.plugins)
       .map(p => `require('${p}');\n`)
-      .join()
+      .join('')
       .defaultTo('')
       .value();
     const inlineConfigObject = _.pickBy(_.assign({}, cosmi, { token }));
