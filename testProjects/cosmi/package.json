@@ -4,10 +4,10 @@
   "description": "",
   "main": "handler.js",
   "dependencies": {
-    "@iopipe/iopipe": "^1.5.0",
-    "@iopipe/profiler": "^0.1.0",
-    "adm-zip": "^0.4.7",
-    "uuid": "^3.0.1"
+    "@iopipe/core": "^1.8.0",
+    "@iopipe/event-info": "^0.1.1",
+    "@iopipe/trace": "^0.3.0",
+    "adm-zip": "^0.4.7"
   },
   "scripts": {
     "build": "SLS_DEBUG=* IOPIPE_TOKEN='test-token' node ../../node_modules/serverless/bin/serverless package",
@@ -19,7 +19,8 @@
   "devDependencies": {},
   "iopipe": {
     "plugins": [
-      "@iopipe/profiler"
+      "@iopipe/event-info",
+      "@iopipe/trace"
     ]
   }
 }
