@@ -1,8 +1,9 @@
-# IOpipe Serverless Framework Plugin (Beta)
+# IOpipe Serverless Framework Plugin
 
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 [![CircleCI](https://circleci.com/gh/iopipe/serverless-plugin-iopipe/tree/master.svg?style=svg&circle-token=3787c8931aea4de4facb5fde25ae456f294f8cc1)](https://circleci.com/gh/iopipe/serverless-plugin-iopipe/tree/master)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 A [serverless](http://www.serverless.com) plugin to automatically wrap your functions with [iopipe](https://iopipe.com).
 
