@@ -77,7 +77,7 @@
     "uglify": "./node_modules/uglify-es/bin/uglifyjs dist/index.js --output dist/index.js --beautify",
     "webpack": "webpack"
   },
-  "version": "1.1.0",
+  "version": "0.0.0-semantically-released",
   "eslintConfig": {
     "extends": "./node_modules/@iopipe/scripts/eslint.js"
   },
