@@ -9,7 +9,7 @@ machine:
 test:
   override:
     - yarn
-    - yarn run test
+    - yarn run validate
 deployment:
   release:
     branch: master
