@@ -13,25 +13,12 @@
   },
   "description": "Serverless Plugin IOpipe",
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-core": "^6.25.0",
-    "babel-eslint": "^7.2.1",
-    "babel-jest": "^19.0.0",
+    "@iopipe/scripts": "^1.4.1",
+    "adm-zip": "^0.4.7",
     "babel-loader": "^7.0.0",
-    "babel-plugin-module-resolver": "^2.4.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-babili": "^0.1.3",
-    "babel-preset-env": "^1.5.2",
-    "babel-preset-stage-0": "^6.24.1",
-    "babel-runtime": "^6.23.0",
     "circular-json": "^0.3.1",
     "cross-spawn": "^6.0.4",
-    "eslint": "^3.19.0",
-    "eslint-plugin-jest": "^19.0.1",
-    "eslint-plugin-prettier": "^2.1.2",
-    "jest": "^19.0.2",
     "pre-commit": "^1.2.2",
-    "prettier": "^1.10.2",
     "raw-loader": "^0.5.1",
     "serverless": "1.23.0",
     "uglify-es": "^3.0.27",
@@ -70,7 +57,7 @@
   "main": "dist/index.js",
   "name": "serverless-plugin-iopipe",
   "pre-commit": [
-    "test"
+    "lint"
   ],
   "repository": {
     "type": "git",
@@ -78,19 +65,32 @@
   },
   "scripts": {
     "build": "NODE_ENV=production npm run folder && npm run webpack && npm run uglify",
-    "babel": "babel src --out-dir dist --ignore **/*.test.js,**/__mocks__/**",
-    "eslint": "eslint src",
-    "eslintFix": "npm run eslint -- --fix",
+    "commit": "iopipe-scripts commit",
     "folder": "rm -rf dist && mkdir dist",
-    "jest": "jest",
-    "jestUpdateSnapshot": "jest --updateSnapshot",
+    "lint": "iopipe-scripts lint",
     "prepublish": "npm run build",
+    "release": "iopipe-scripts release",
     "sls": "LOCAL_PLUGIN=true SLS_DEBUG=* cd testProject && yarn && npm run build && cd ../",
     "slsDeploy": "LOCAL_PLUGIN=true SLS_DEBUG=* cd testProject && yarn && npm run deploy && cd ../",
-    "test": "npm run eslint && npm run build && npm run jest && npm run testProjects",
+    "test": "iopipe-scripts test",
     "testProjects": "node util/testProjects",
     "uglify": "./node_modules/uglify-es/bin/uglifyjs dist/index.js --output dist/index.js --beautify",
+    "validate": "npm run lint && npm run build && npm run test && npm run testProjects",
     "webpack": "webpack"
   },
-  "version": "1.1.0"
+  "version": "0.0.0-semantically-released",
+  "eslintConfig": {
+    "extends": "./node_modules/@iopipe/scripts/eslint.js"
+  },
+  "eslintIgnore": [
+    "coverage",
+    "node_modules",
+    "dist",
+    "handlerCode.js",
+    ".serverless",
+    "testProjects/*/node_modules",
+    "testProjects/*/.serverless",
+    "testProjects/*/.serverless_plugins",
+    "syntaxError.js"
+  ]
 }

@@ -1,13 +1,13 @@
-import _ from 'lodash';
-import fs from 'fs-extra';
 import { exec } from 'child_process';
 import { join } from 'path';
-import { default as debugLib } from 'debug';
+import _ from 'lodash';
+import fs from 'fs-extra';
+import debugLib from 'debug';
 import cosmiconfig from 'cosmiconfig';
 
 import { getVisitor, track } from './util/track';
 import hrMillis from './util/hrMillis';
-import handlerCode from './handlerCode.js';
+import handlerCode from './handlerCode';
 
 function createDebugger(suffix) {
   return debugLib(`serverless-plugin-iopipe:${suffix}`);
@@ -15,7 +15,7 @@ function createDebugger(suffix) {
 
 function outputHandlerCode(obj = {}, index) {
   const { name, relativePath, method } = obj;
-  const fnName = _.camelCase('attempt-' + name) + index;
+  const fnName = _.camelCase(`attempt-${name}`) + index;
   return handlerCode
     .replace(/EXPORT_NAME/g, name)
     .replace(/FUNCTION_NAME/g, fnName)
@@ -44,6 +44,7 @@ function getUpgradeVersion({
       `${preCmd}${preCmd &&
         ' && '}${packageManager} outdated ${installed} && echo $?`,
       (err, stdout = '', stderr = '') => {
+        _.noop(err);
         const stdoutLines = _.chain(stdout)
           .split('\n')
           .map(s => _.trim(s))
@@ -137,7 +138,9 @@ class ServerlessIOpipePlugin {
   }
   log(arg1, ...rest) {
     //sls doesn't actually support multiple args to log?
+    /*eslint-disable no-console*/
     const logger = this.sls.cli.log || console.log;
+    /*eslint-enable no-console*/
     logger.call(this.sls.cli, `serverless-plugin-iopipe: ${arg1}`, ...rest);
   }
   track(kwargs) {
@@ -244,7 +247,7 @@ class ServerlessIOpipePlugin {
       action: 'lib-upgrade',
       label: packageManager
     });
-    let version = undefined;
+    let version;
 
     // Get the version of iopipe that we need to upgrade to, if necessary
     try {
@@ -331,12 +334,14 @@ class ServerlessIOpipePlugin {
         action: 'get-funcs-fail',
         value: err
       });
+      /*eslint-disable no-console*/
       console.error('Failed to read functions from serverless.yml.');
+      /*eslint-enable no-console*/
       throw new Error(err);
     }
   }
   getConfigFromCosmi() {
-    let { token } = this.getOptions();
+    const { token } = this.getOptions();
     const { config: cosmi = {} } =
       cosmiconfig('iopipe', {
         cache: false,

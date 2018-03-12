@@ -1,10 +1,10 @@
+import { join } from 'path';
+import { createHash } from 'crypto';
 import ua from 'universal-analytics';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { join } from 'path';
 import uuid from 'uuid';
-import { createHash } from 'crypto';
-import { default as debugLib } from 'debug';
+import debugLib from 'debug';
 
 const debug = debugLib('serverless-plugin-iopipe:track');
 

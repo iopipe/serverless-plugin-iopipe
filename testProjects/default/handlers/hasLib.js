@@ -1,4 +1,4 @@
-const iopipe = require('iopipe')({clientId: 'FOOBAR'});
+const iopipe = require('iopipe')({ clientId: 'FOOBAR' });
 
 module.exports.handler = iopipe((event, context, callback) => {
   const response = {

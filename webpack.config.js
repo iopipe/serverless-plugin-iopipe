@@ -25,7 +25,7 @@ module.exports = {
         }
       },
       {
-        test: /handlerCode\.js$/,
+        test: /handlerCode/,
         use: 'raw-loader'
       }
     ]
