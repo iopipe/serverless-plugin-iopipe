@@ -106,6 +106,7 @@ class ServerlessIOpipePlugin {
     this.funcs = [];
     this.originalServicePath = this.sls.config.servicePath;
     this.handlerFileName = 'iopipe-handlers';
+
     this.commands = {
       iopipe: {
         usage:
@@ -113,6 +114,7 @@ class ServerlessIOpipePlugin {
         lifecycleEvents: ['run']
       }
     };
+
     this.hooks = {
       'before:package:createDeploymentArtifacts': this.run.bind(this),
       'before:invoke:local:invoke': this.run.bind(this),
@@ -121,6 +123,7 @@ class ServerlessIOpipePlugin {
       'iopipe:run': this.greeting.bind(this)
     };
   }
+
   getOptions(obj = this.options) {
     this.options = _.chain(obj)
       .defaults(this.options)
@@ -131,11 +134,13 @@ class ServerlessIOpipePlugin {
       .value();
     return this.options;
   }
+
   getInstalledPackageName({ dependencies } = this.package) {
     return ['@iopipe/iopipe', '@iopipe/core', 'iopipe'].find(s =>
       _.keys(dependencies).find(n => n === s)
     );
   }
+
   log(arg1, ...rest) {
     //sls doesn't actually support multiple args to log?
     /*eslint-disable no-console*/
@@ -143,21 +148,28 @@ class ServerlessIOpipePlugin {
     /*eslint-enable no-console*/
     logger.call(this.sls.cli, `serverless-plugin-iopipe: ${arg1}`, ...rest);
   }
+
   track(kwargs) {
     return track(this, kwargs);
   }
+
   greeting() {
     this.log(
       'Welcome to the IOpipe Serverless plugin. You can use this plugin for sls invoke local or sls deploy. Make sure you have the $IOPIPE_TOKEN environment variable set documented here: https://github.com/iopipe/serverless-plugin-iopipe#install.'
     );
   }
+
   async run() {
     const start = process.hrtime();
+
     this.setOptions({});
+
     this.track({
       action: 'run-start'
     });
+
     this.log('Wrapping your functions with IO|...');
+
     this.setPackage();
     this.checkForLib();
     this.checkToken();
@@ -165,11 +177,13 @@ class ServerlessIOpipePlugin {
     this.getFuncs();
     this.createFile();
     this.assignHandlers();
+
     this.track({
       action: 'run-finish',
       value: hrMillis(start)
     });
   }
+
   setPackage() {
     try {
       this.package = fs.readJsonSync(join(this.prefix, 'package.json'));
@@ -177,6 +191,7 @@ class ServerlessIOpipePlugin {
       this.package = {};
     }
   }
+
   setOptions(opts) {
     const debug = createDebugger('setOptions');
     const custom = _.chain(this.sls)
@@ -202,6 +217,7 @@ class ServerlessIOpipePlugin {
     });
     this.getOptions(val);
   }
+
   checkForLib(pack = this.package) {
     const installed = this.getInstalledPackageName(pack);
     if (_.isEmpty(pack) || !_.isPlainObject(pack)) {
@@ -224,6 +240,7 @@ class ServerlessIOpipePlugin {
     }
     return true;
   }
+
   checkToken() {
     const token = this.getOptions().token;
     if (!token) {
@@ -234,6 +251,7 @@ class ServerlessIOpipePlugin {
     }
     return true;
   }
+
   async upgradeLib(suppliedTargetVersion, preCmd = 'echo Installing.') {
     if (this.getOptions().noUpgrade) {
       return 'no-upgrade';
@@ -291,6 +309,7 @@ class ServerlessIOpipePlugin {
     this.log(`Upgraded IOpipe to ${version} automatically. 💪`);
     return `success-upgrade-${packageManager}-${version}`;
   }
+
   getFuncs() {
     try {
       const { servicePath } = this.sls.config;
@@ -340,6 +359,7 @@ class ServerlessIOpipePlugin {
       throw new Error(err);
     }
   }
+
   getConfigFromCosmi() {
     const { token } = this.getOptions();
     const { config: cosmi = {} } =
@@ -362,9 +382,11 @@ class ServerlessIOpipePlugin {
       inlineConfig
     };
   }
+
   createFile() {
     const debug = createDebugger('createFile');
     debug('Creating file');
+
     const { inlineConfig, requireLines } = this.getConfigFromCosmi();
     const iopipeInclude = `${requireLines}const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
     const funcContents = _.chain(this.funcs)
@@ -372,23 +394,28 @@ class ServerlessIOpipePlugin {
       .join('\n')
       .value();
     const contents = `${iopipeInclude}\n\n${funcContents}`;
+
     fs.writeFileSync(
       join(this.originalServicePath, `${this.handlerFileName}.js`),
       contents
     );
+
     return contents;
   }
+
   assignHandlers() {
     const debug = createDebugger('assignHandlers');
     debug('Assigning iopipe handlers to sls service');
-    this.funcs.forEach(obj => {
+
+    this.funcs.forEach(func => {
       _.set(
         this.sls.service.functions,
-        `${obj.name}.handler`,
-        `${this.handlerFileName}.${obj.name}`
+        `${func.name}.handler`,
+        `${this.handlerFileName}.${func.name}`
       );
     });
   }
+
   finish() {
     const debug = createDebugger('finish');
     this.log(
