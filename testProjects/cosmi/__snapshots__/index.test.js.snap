@@ -5,7 +5,7 @@ exports[`Generated file requires plugin and includes plugin inline 1`] = `
 require('@iopipe/trace');
 const iopipe = require('@iopipe/core')({\\"plugins\\":[\\"@iopipe/event-info\\",\\"@iopipe/trace\\"],\\"token\\":\\"test-token\\"});
 
-exports['simple'] = function attemptSimple0(event, context, callback) {
+exports['simple'] = function attemptSimple(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
       return require('./handlers/simple').handler(evt, ctx, cb);

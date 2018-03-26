@@ -43,3 +43,5 @@ functions:
   python:
     handler: python/main.longRunning
     runtime: python2.7
+  nameMismatch:
+    handler: handlers/differentName.wow

@@ -7,7 +7,7 @@ test('Generated file requires plugin and includes plugin inline', async () => {
   expect(1).toBe(1);
   const handlerFile = _.find(
     zip.getEntries(),
-    entry => entry.entryName === 'iopipe-handlers.js'
+    entry => entry.entryName === 'simple-0-iopipe.js'
   );
   const fileContents = handlerFile.getData().toString('utf8');
   expect(fileContents).toMatchSnapshot();

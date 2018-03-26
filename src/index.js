@@ -4,6 +4,7 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import debugLib from 'debug';
 import cosmiconfig from 'cosmiconfig';
+import del from 'del';
 
 import { getVisitor, track } from './util/track';
 import hrMillis from './util/hrMillis';
@@ -13,9 +14,9 @@ function createDebugger(suffix) {
   return debugLib(`serverless-plugin-iopipe:${suffix}`);
 }
 
-function outputHandlerCode(obj = {}, index) {
+function outputHandlerCode(obj = {}) {
   const { name, relativePath, method } = obj;
-  const fnName = _.camelCase(`attempt-${name}`) + index;
+  const fnName = _.camelCase(`attempt-${name}`);
   return handlerCode
     .replace(/EXPORT_NAME/g, name)
     .replace(/FUNCTION_NAME/g, fnName)
@@ -105,7 +106,6 @@ class ServerlessIOpipePlugin {
     this.package = {};
     this.funcs = [];
     this.originalServicePath = this.sls.config.servicePath;
-    this.handlerFileName = 'iopipe-handlers';
     this.commands = {
       iopipe: {
         usage:
@@ -163,7 +163,7 @@ class ServerlessIOpipePlugin {
     this.checkToken();
     await this.upgradeLib();
     this.getFuncs();
-    this.createFile();
+    this.createFiles();
     this.assignHandlers();
     this.track({
       action: 'run-finish',
@@ -310,8 +310,7 @@ class ServerlessIOpipePlugin {
           return false;
         })
         .map(arr => {
-          const key = arr[0];
-          const obj = arr[1];
+          const [key, obj] = arr;
           const handlerArr = _.isString(obj.handler)
             ? obj.handler.split('.')
             : [];
@@ -321,7 +320,8 @@ class ServerlessIOpipePlugin {
             method: _.last(handlerArr),
             path,
             name: key,
-            relativePath
+            relativePath,
+            file: _.last((handlerArr.slice(-2, -1)[0] || '').split('/'))
           });
         })
         .value();
@@ -362,40 +362,38 @@ class ServerlessIOpipePlugin {
       inlineConfig
     };
   }
-  createFile() {
-    const debug = createDebugger('createFile');
+  createFiles() {
+    const debug = createDebugger('createFiles');
     debug('Creating file');
     const { inlineConfig, requireLines } = this.getConfigFromCosmi();
     const iopipeInclude = `${requireLines}const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
-    const funcContents = _.chain(this.funcs)
-      .map(outputHandlerCode)
-      .join('\n')
-      .value();
-    const contents = `${iopipeInclude}\n\n${funcContents}`;
-    fs.writeFileSync(
-      join(this.originalServicePath, `${this.handlerFileName}.js`),
-      contents
-    );
-    return contents;
+    this.funcs.forEach((func, index) => {
+      const handler = outputHandlerCode(func);
+      const contents = `${iopipeInclude}\n\n${handler}`;
+      fs.writeFileSync(
+        join(this.originalServicePath, `${func.name}-${index}-iopipe.js`),
+        contents
+      );
+    });
   }
   assignHandlers() {
     const debug = createDebugger('assignHandlers');
     debug('Assigning iopipe handlers to sls service');
-    this.funcs.forEach(obj => {
+    this.funcs.forEach((obj, index) => {
       _.set(
         this.sls.service.functions,
         `${obj.name}.handler`,
-        `${this.handlerFileName}.${obj.name}`
+        `${obj.name}-${index}-iopipe.${obj.name}`
       );
     });
   }
-  finish() {
+  async finish() {
     const debug = createDebugger('finish');
     this.log(
       'Successfully wrapped Node.js functions with IOpipe, cleaning up.'
     );
     debug(`Removing ${this.handlerFileName}.js`);
-    fs.removeSync(join(this.originalServicePath, `${this.handlerFileName}.js`));
+    await del(join(this.originalServicePath, '*-iopipe.js'));
     this.track({
       action: 'finish'
     })

@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Generated file requires plugin and includes plugin inline 1`] = `
+exports[`Generated files require plugin, include plugin inline, and export original handler 1`] = `
 "const iopipe = require('iopipe')({\\"token\\":\\"test-token\\"});
 
-exports['simple'] = function attemptSimple0(event, context, callback) {
+exports['simple'] = function attemptSimple(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
       return require('./handlers/simple').handler(evt, ctx, cb);
@@ -12,71 +12,31 @@ exports['simple'] = function attemptSimple0(event, context, callback) {
     throw err;
   }
 };
+"
+`;
 
-exports['multiple'] = function attemptMultiple1(event, context, callback) {
+exports[`Generated files require plugin, include plugin inline, and export original handler 2`] = `
+"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\"});
+
+exports['nameMismatch'] = function attemptNameMismatch(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      return require('./handlers/multiple').handler(evt, ctx, cb);
+      return require('./handlers/differentName').wow(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
   }
 };
+"
+`;
 
-exports['multipleDifferentHandler'] = function attemptMultipleDifferentHandler2(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/multiple').differentNameHandler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
+exports[`Generated files require plugin, include plugin inline, and export original handler 3`] = `
+"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\"});
 
-exports['es5'] = function attemptEs53(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/es5').handler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['multiple-dots-in-name'] = function attemptMultipleDotsInName4(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/multiple.dots.in.name').handler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['noModule'] = function attemptNoModule5(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/noModule').handler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['syntaxError'] = function attemptSyntaxError6(event, context, callback) {
+exports['syntaxError'] = function attemptSyntaxError(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
       return require('./handlers/syntaxError').handler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['es5Named'] = function attemptEs5Named7(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/es5Named').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
