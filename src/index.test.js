@@ -69,7 +69,7 @@ test('Plugin has proper executeable methods', () => {
     'upgradeLib',
     'checkToken',
     'getFuncs',
-    'createFile',
+    'createFiles',
     'assignHandlers',
     'finish'
   ].forEach(str => {
@@ -228,49 +228,18 @@ test('Gets funcs', () => {
 
 test('Can create iopipe handler file', () => {
   Plugin.getOptions({ token: 'TEST_TOKEN' });
-  Plugin.createFile();
-  const file = readFileSync(path.join(prefix, 'iopipe-handlers.js'), 'utf8');
+  Plugin.createFiles();
+  const file = readFileSync(path.join(prefix, 'simple-0-iopipe.js'), 'utf8');
   expect(file).toBeDefined();
   expect(file).toMatchSnapshot();
 });
 
 test('Agent instantiation is blank if no iopipeToken in custom section of serverless.yml', () => {
   Plugin.getOptions({ token: '' });
-  const file = Plugin.createFile();
+  Plugin.createFiles();
+  const file = readFileSync(path.join(prefix, 'simple-0-iopipe.js'), 'utf8');
   expect(file).toBeDefined();
   expect(file.split('\n')[0]).toEqual("const iopipe = require('iopipe')();");
-});
-
-test('Handler file works', async () => {
-  const { simple } = require(path.join(prefix, 'iopipe-handlers.js'));
-  expect(simple).toBeInstanceOf(Function);
-  const simplePromise = new Promise((resolve, reject) => {
-    // run the handler with dummy event / context
-    simple(
-      {},
-      {
-        succeed: resolve,
-        fail: reject
-      }
-    );
-  });
-  const simpleReturn = await simplePromise;
-  expect(simpleReturn).toBeInstanceOf(Object);
-  expect(simpleReturn.statusCode).toBe(200);
-});
-
-test('Syntax error handler is accounted for', async () => {
-  // need to include token for lib not to simply return the user func
-  process.env.IOPIPE_TOKEN = 'test_token';
-  const { syntaxError } = require(path.join(prefix, 'iopipe-handlers.js'));
-  expect(syntaxError).toBeInstanceOf(Function);
-  const returnValue = await new Promise(resolve => {
-    syntaxError({}, {}, resolve);
-  });
-  expect(returnValue.message).toMatch(/Unexpected\stoken,\s/);
-  expect(returnValue.message).toMatch(
-    /\/testProjects\/default\/handlers\/syntaxError\.js/
-  );
 });
 
 test('Cleans up', () => {

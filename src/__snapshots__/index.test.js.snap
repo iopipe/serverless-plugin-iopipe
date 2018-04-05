@@ -3,70 +3,10 @@
 exports[`Can create iopipe handler file 1`] = `
 "const iopipe = require('iopipe')({\\"token\\":\\"TEST_TOKEN\\"});
 
-exports['simple'] = function attemptSimple0(event, context, callback) {
+exports['simple'] = function attemptSimple(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
       return require('./handlers/simple').handler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['multiple'] = function attemptMultiple1(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/multiple').handler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['multipleDifferentHandler'] = function attemptMultipleDifferentHandler2(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/multiple').differentNameHandler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['es5'] = function attemptEs53(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/es5').handler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['multiple-dots-in-name'] = function attemptMultipleDotsInName4(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/multiple.dots.in.name').handler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['noModule'] = function attemptNoModule5(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/noModule').handler(evt, ctx, cb);
-    })(event, context, callback);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports['syntaxError'] = function attemptSyntaxError6(event, context, callback) {
-  try {
-    return iopipe((evt, ctx, cb) => {
-      return require('./handlers/syntaxError').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
