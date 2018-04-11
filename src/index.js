@@ -393,7 +393,7 @@ class ServerlessIOpipePlugin {
       'Successfully wrapped Node.js functions with IOpipe, cleaning up.'
     );
     debug(`Removing ${this.handlerFileName}.js`);
-    await del(join(this.originalServicePath, '*-iopipe.js'));
+    await del(join(this.originalServicePath, '*-iopipe.js'), { force: true });
     this.track({
       action: 'finish'
     })
