@@ -20,7 +20,7 @@ async function run() {
 const offlineChild = spawn('npm', ['start'], {
   stdio: 'inherit',
   // http://azimi.me/2014/12/31/kill-child_process-node-js.html
-  detatched: true
+  detached: true
 });
 
 setTimeout(async () => {
@@ -30,7 +30,7 @@ setTimeout(async () => {
   } catch (e) {
     err = e;
   }
-  process.kill(offlineChild.pid, 'SIGINT');
+  process.kill(-offlineChild.pid, 'SIGINT');
   if (err) {
     throw err;
   }
