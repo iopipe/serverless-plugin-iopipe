@@ -18,49 +18,40 @@ const folders = _.chain(testDirFiles)
   })
   .value();
 
-const results = [];
-function resultPush({ status } = {}) {
-  results.push(status);
-}
+const results = _.flatten(
+  folders.map(folder => {
+    console.log(`Running tests for ${folder}...`);
+    return _.compact([
+      !argv.noInstall &&
+        spawn.sync('yarn', ['install', '--cwd', `testProjects/${folder}`], {
+          stdio: 'inherit'
+        }),
 
-folders.forEach(folder => {
-  console.log(`Running tests for ${folder}...`);
-  !argv.noInstall &&
-    resultPush(
-      spawn.sync('yarn', ['install', '--cwd', `testProjects/${folder}`], {
-        stdio: 'inherit'
-      })
-    );
+      fs.copySync(
+        'dist/index.js',
+        `testProjects/${folder}/.serverless_plugins/serverless-plugin-iopipe/index.js`
+      ),
 
-  resultPush(
-    fs.copySync(
-      'dist/index.js',
-      `testProjects/${folder}/.serverless_plugins/serverless-plugin-iopipe/index.js`
-    )
-  );
+      !argv.noBuild &&
+        spawn.sync('yarn', ['--cwd', `testProjects/${folder}`, 'build'], {
+          stdio: 'inherit'
+        }),
 
-  !argv.noBuild &&
-    resultPush(
-      spawn.sync('yarn', ['--cwd', `testProjects/${folder}`, 'build'], {
-        stdio: 'inherit'
-      })
-    );
+      spawn.sync(
+        'yarn',
+        _.compact([
+          '--cwd',
+          `testProjects/${folder}`,
+          'test',
+          (argv.u || argv.updateSnapshot) && '--updateSnapshot'
+        ]),
+        {
+          stdio: 'inherit'
+        }
+      ),
+      console.log(`Finished tests for ${folder}.`)
+    ]);
+  })
+);
 
-  resultPush(
-    spawn.sync(
-      'yarn',
-      _.compact([
-        '--cwd',
-        `testProjects/${folder}`,
-        'test',
-        (argv.u || argv.updateSnapshot) && '--updateSnapshot'
-      ]),
-      {
-        stdio: 'inherit'
-      }
-    )
-  );
-  console.log(`Finished tests for ${folder}.`);
-});
-
-process.exit(_.max(results) || 0);
+process.exit(_.max(_.map(results, 'status')) || 0);
