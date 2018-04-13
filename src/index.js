@@ -4,7 +4,6 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import debugLib from 'debug';
 import cosmiconfig from 'cosmiconfig';
-import del from 'del';
 
 import { getVisitor, track } from './util/track';
 import hrMillis from './util/hrMillis';
@@ -379,8 +378,12 @@ class ServerlessIOpipePlugin {
     this.funcs.forEach((func, index) => {
       const handler = outputHandlerCode(func);
       const contents = `${iopipeInclude}\n\n${handler}`;
+      fs.ensureDirSync(join(this.originalServicePath, '.iopipe'));
       fs.writeFileSync(
-        join(this.originalServicePath, `${func.name}-${index}-iopipe.js`),
+        join(
+          this.originalServicePath,
+          `.iopipe/${func.name}-${index}-iopipe.js`
+        ),
         contents
       );
     });
@@ -400,7 +403,7 @@ class ServerlessIOpipePlugin {
     const debug = createDebugger('finish');
     this.log('Cleaning up extraneous IOpipe files');
     debug(`Removing ${this.handlerFileName}.js`);
-    await del(join(this.originalServicePath, '*-iopipe.js'), { force: true });
+    await fs.removeSync(join(this.originalServicePath, '.iopipe'));
     this.track({
       action: 'finish'
     })

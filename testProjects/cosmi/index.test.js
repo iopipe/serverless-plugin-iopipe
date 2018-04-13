@@ -1,20 +1,24 @@
 /*eslint-disable import/no-extraneous-dependencies*/
 import _ from 'lodash';
-import AdmZip from 'adm-zip';
 
-test('Generated file requires plugin and includes plugin inline', async () => {
-  const zip = new AdmZip('./.serverless/sls-iopipe-cosmi-test.zip');
-  expect(1).toBe(1);
-  const handlerFile = _.find(
-    zip.getEntries(),
-    entry => entry.entryName === 'simple-0-iopipe.js'
-  );
-  const fileContents = handlerFile.getData().toString('utf8');
-  expect(fileContents).toMatchSnapshot();
-  /*eslint-disable no-eval*/
-  eval(fileContents);
-  const result = await new Promise(succeed => {
-    exports.simple({}, { succeed });
+import { cleanup, run, unzip } from '../util/unzipRun';
+
+process.env.IOPIPE_TOKEN = 'test_token';
+
+const dir = __dirname;
+
+beforeAll(() => {
+  unzip({ dir });
+});
+
+afterAll(() => {
+  cleanup({ dir });
+});
+
+test('Generated files requires plugin and includes plugin inline', async () => {
+  const simpleRes = await run({
+    dir,
+    file: 'simple-0-iopipe.js'
   });
-  expect(result).toEqual(200);
+  expect(simpleRes).toBe(200);
 });

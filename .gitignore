@@ -12,3 +12,5 @@ testProjects/*/package-lock.json
 testProjects/*/yarn.lock
 iopipe-handlers.js
 *-iopipe.js
+.iopipe
+.serverlessUnzipped

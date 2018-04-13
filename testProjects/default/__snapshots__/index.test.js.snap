@@ -6,7 +6,7 @@ exports[`Generated files require plugin, include plugin inline, and export origi
 exports['simple'] = function attemptSimple(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      return require('./handlers/simple').handler(evt, ctx, cb);
+      return require('../handlers/simple').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -21,7 +21,7 @@ exports[`Generated files require plugin, include plugin inline, and export origi
 exports['nameMismatch'] = function attemptNameMismatch(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      return require('./handlers/differentName').wow(evt, ctx, cb);
+      return require('../handlers/differentName').wow(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -36,7 +36,7 @@ exports[`Generated files require plugin, include plugin inline, and export origi
 exports['syntaxError'] = function attemptSyntaxError(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      return require('./handlers/syntaxError').handler(evt, ctx, cb);
+      return require('../handlers/syntaxError').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
