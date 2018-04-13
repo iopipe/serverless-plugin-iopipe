@@ -400,7 +400,7 @@ class ServerlessIOpipePlugin {
     const debug = createDebugger('finish');
     this.log('Cleaning up extraneous IOpipe files');
     debug(`Removing ${this.handlerFileName}.js`);
-    await del(join(this.originalServicePath, '*-iopipe.js'));
+    await del(join(this.originalServicePath, '*-iopipe.js'), { force: true });
     this.track({
       action: 'finish'
     })
