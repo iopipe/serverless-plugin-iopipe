@@ -110,15 +110,24 @@ class ServerlessIOpipePlugin {
       iopipe: {
         usage:
           "Automatically wraps your function handlers in IOpipe, so you don't have to.",
-        lifecycleEvents: ['run']
+        lifecycleEvents: ['run', 'clean'],
+        commands: {
+          clean: {
+            usage: 'Cleans up extra IOpipe files if necessary',
+            lifecycleEvents: ['init']
+          }
+        }
       }
     };
     this.hooks = {
+      'iopipe:run': this.greeting.bind(this),
       'before:package:createDeploymentArtifacts': this.run.bind(this),
       'before:invoke:local:invoke': this.run.bind(this),
+      'before:offline:start:init': this.run.bind(this),
+      'before:step-functions-offline:start': this.run.bind(this),
       'after:package:createDeploymentArtifacts': this.finish.bind(this),
       'after:invoke:local:invoke': this.finish.bind(this),
-      'iopipe:run': this.greeting.bind(this)
+      'iopipe:clean:init': this.finish.bind(this)
     };
   }
   getOptions(obj = this.options) {
@@ -389,9 +398,7 @@ class ServerlessIOpipePlugin {
   }
   async finish() {
     const debug = createDebugger('finish');
-    this.log(
-      'Successfully wrapped Node.js functions with IOpipe, cleaning up.'
-    );
+    this.log('Cleaning up extraneous IOpipe files');
     debug(`Removing ${this.handlerFileName}.js`);
     await del(join(this.originalServicePath, '*-iopipe.js'), { force: true });
     this.track({
