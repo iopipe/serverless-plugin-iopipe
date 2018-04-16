@@ -19,3 +19,4 @@ functions:
 custom:
   serverless-offline:
     port: 4982
+  iopipeHandlerDir: iopipe_handlers

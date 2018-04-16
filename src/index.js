@@ -133,7 +133,8 @@ class ServerlessIOpipePlugin {
     this.options = _.chain(obj)
       .defaults(this.options)
       .defaults({
-        quote: 'single'
+        quote: 'single',
+        handlerDir: '.iopipe'
       })
       .mapKeys((val, key) => _.camelCase(key))
       .value();
@@ -374,15 +375,16 @@ class ServerlessIOpipePlugin {
     const debug = createDebugger('createFiles');
     debug('Creating file');
     const { inlineConfig, requireLines } = this.getConfigFromCosmi();
+    const { handlerDir } = this.getOptions();
     const iopipeInclude = `${requireLines}const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
     this.funcs.forEach((func, index) => {
       const handler = outputHandlerCode(func);
       const contents = `${iopipeInclude}\n\n${handler}`;
-      fs.ensureDirSync(join(this.originalServicePath, '.iopipe'));
+      fs.ensureDirSync(join(this.originalServicePath, handlerDir));
       fs.writeFileSync(
         join(
           this.originalServicePath,
-          `.iopipe/${func.name}-${index}-iopipe.js`
+          `${handlerDir}/${func.name}-${index}-iopipe.js`
         ),
         contents
       );
@@ -391,11 +393,12 @@ class ServerlessIOpipePlugin {
   assignHandlers() {
     const debug = createDebugger('assignHandlers');
     debug('Assigning iopipe handlers to sls service');
+    const { handlerDir } = this.getOptions();
     this.funcs.forEach((obj, index) => {
       _.set(
         this.sls.service.functions,
         `${obj.name}.handler`,
-        `${obj.name}-${index}-iopipe.${obj.name}`
+        `${handlerDir}/${obj.name}-${index}-iopipe.${obj.name}`
       );
     });
   }
@@ -403,7 +406,8 @@ class ServerlessIOpipePlugin {
     const debug = createDebugger('finish');
     this.log('Cleaning up extraneous IOpipe files');
     debug(`Removing ${this.handlerFileName}.js`);
-    await fs.removeSync(join(this.originalServicePath, '.iopipe'));
+    const { handlerDir = '.iopipe' } = this.getOptions();
+    await fs.removeSync(join(this.originalServicePath, handlerDir));
     this.track({
       action: 'finish'
     })
