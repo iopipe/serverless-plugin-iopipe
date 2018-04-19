@@ -6,7 +6,12 @@ import _ from 'lodash';
 import AdmZip from 'adm-zip';
 
 function getFilePathAndContents({ dir = __dirname, file = '' }) {
-  const filePath = path.join(dir, '.serverlessUnzipped/.iopipe', file);
+  const filePath = path.join(
+    dir,
+    '.serverlessUnzipped',
+    'iopipe_handlers',
+    file
+  );
   const contents = fs.readFileSync(filePath, 'utf8');
   return { path: filePath, contents };
 }

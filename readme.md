@@ -82,7 +82,9 @@ By default, the plugin sends _anonymized_, non-identifying usage statistics to G
 
 #### `iopipeHandlerDir` (optional)
 
-Change the directory that the IOpipe handler files will be generated in. Defaults to `.iopipe`.
+Change the directory that the IOpipe handler files will be generated in. Defaults to `iopipe_handlers`. Note, watch out using directories beginning with a `.` character due to current bugs within Serverless framework and serverless-offline:
+- [serverless/issues/4633](https://github.com/serverless/serverless/issues/4633)
+- [serverless-offline/pull/346](https://github.com/dherault/serverless-offline/pull/346)
 
 ## FAQ
 - Does this work with webpack?

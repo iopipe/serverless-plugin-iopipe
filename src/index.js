@@ -134,7 +134,7 @@ class ServerlessIOpipePlugin {
       .defaults(this.options)
       .defaults({
         quote: 'single',
-        handlerDir: '.iopipe'
+        handlerDir: 'iopipe_handlers'
       })
       .mapKeys((val, key) => _.camelCase(key))
       .value();
@@ -258,13 +258,15 @@ class ServerlessIOpipePlugin {
     });
     let version;
 
+    const installed = this.getInstalledPackageName();
+
     // Get the version of iopipe that we need to upgrade to, if necessary
     try {
       version = await getUpgradeVersion({
         packageManager,
         suppliedTargetVersion,
         debug,
-        installed: this.getInstalledPackageName(),
+        installed,
         preCmd
       });
       if (version === true) {
@@ -283,7 +285,7 @@ class ServerlessIOpipePlugin {
 
     // If we have a version that we now need to upgrade to, lets upgrade
     try {
-      this.package.dependencies.iopipe = version;
+      this.package.dependencies[installed] = version;
       await runUpgrade(this, packageManager, version, preCmd, debug);
     } catch (err) {
       this.log(err);
@@ -297,7 +299,7 @@ class ServerlessIOpipePlugin {
       action: 'lib-upgrade-success',
       value: true
     });
-    this.log(`Upgraded IOpipe to ${version} automatically. 💪`);
+    this.log(`Upgraded ${installed} to ${version} automatically. 💪`);
     return `success-upgrade-${packageManager}-${version}`;
   }
   getFuncs() {
@@ -384,7 +386,7 @@ class ServerlessIOpipePlugin {
       fs.writeFileSync(
         join(
           this.originalServicePath,
-          `${handlerDir}/${func.name}-${index}-iopipe.js`
+          join(handlerDir, `${func.name}-${index}-iopipe.js`)
         ),
         contents
       );
@@ -398,16 +400,16 @@ class ServerlessIOpipePlugin {
       _.set(
         this.sls.service.functions,
         `${obj.name}.handler`,
-        `${handlerDir}/${obj.name}-${index}-iopipe.${obj.name}`
+        join(handlerDir, `${obj.name}-${index}-iopipe.${obj.name}`)
       );
     });
   }
-  async finish() {
+  finish() {
     const debug = createDebugger('finish');
     this.log('Cleaning up extraneous IOpipe files');
     debug(`Removing ${this.handlerFileName}.js`);
-    const { handlerDir = '.iopipe' } = this.getOptions();
-    await fs.removeSync(join(this.originalServicePath, handlerDir));
+    const { handlerDir = 'iopipe_handlers' } = this.getOptions();
+    fs.removeSync(join(this.originalServicePath, handlerDir));
     this.track({
       action: 'finish'
     })
