@@ -4,7 +4,6 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import debugLib from 'debug';
 import cosmiconfig from 'cosmiconfig';
-import del from 'del';
 
 import { getVisitor, track } from './util/track';
 import hrMillis from './util/hrMillis';
@@ -134,7 +133,8 @@ class ServerlessIOpipePlugin {
     this.options = _.chain(obj)
       .defaults(this.options)
       .defaults({
-        quote: 'single'
+        quote: 'single',
+        handlerDir: 'iopipe_handlers'
       })
       .mapKeys((val, key) => _.camelCase(key))
       .value();
@@ -258,13 +258,15 @@ class ServerlessIOpipePlugin {
     });
     let version;
 
+    const installed = this.getInstalledPackageName();
+
     // Get the version of iopipe that we need to upgrade to, if necessary
     try {
       version = await getUpgradeVersion({
         packageManager,
         suppliedTargetVersion,
         debug,
-        installed: this.getInstalledPackageName(),
+        installed,
         preCmd
       });
       if (version === true) {
@@ -283,7 +285,7 @@ class ServerlessIOpipePlugin {
 
     // If we have a version that we now need to upgrade to, lets upgrade
     try {
-      this.package.dependencies.iopipe = version;
+      this.package.dependencies[installed] = version;
       await runUpgrade(this, packageManager, version, preCmd, debug);
     } catch (err) {
       this.log(err);
@@ -297,7 +299,7 @@ class ServerlessIOpipePlugin {
       action: 'lib-upgrade-success',
       value: true
     });
-    this.log(`Upgraded IOpipe to ${version} automatically. 💪`);
+    this.log(`Upgraded ${installed} to ${version} automatically. 💪`);
     return `success-upgrade-${packageManager}-${version}`;
   }
   getFuncs() {
@@ -375,12 +377,17 @@ class ServerlessIOpipePlugin {
     const debug = createDebugger('createFiles');
     debug('Creating file');
     const { inlineConfig, requireLines } = this.getConfigFromCosmi();
+    const { handlerDir } = this.getOptions();
     const iopipeInclude = `${requireLines}const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
     this.funcs.forEach((func, index) => {
       const handler = outputHandlerCode(func);
       const contents = `${iopipeInclude}\n\n${handler}`;
+      fs.ensureDirSync(join(this.originalServicePath, handlerDir));
       fs.writeFileSync(
-        join(this.originalServicePath, `${func.name}-${index}-iopipe.js`),
+        join(
+          this.originalServicePath,
+          join(handlerDir, `${func.name}-${index}-iopipe.js`)
+        ),
         contents
       );
     });
@@ -388,19 +395,21 @@ class ServerlessIOpipePlugin {
   assignHandlers() {
     const debug = createDebugger('assignHandlers');
     debug('Assigning iopipe handlers to sls service');
+    const { handlerDir } = this.getOptions();
     this.funcs.forEach((obj, index) => {
       _.set(
         this.sls.service.functions,
         `${obj.name}.handler`,
-        `${obj.name}-${index}-iopipe.${obj.name}`
+        join(handlerDir, `${obj.name}-${index}-iopipe.${obj.name}`)
       );
     });
   }
-  async finish() {
+  finish() {
     const debug = createDebugger('finish');
     this.log('Cleaning up extraneous IOpipe files');
     debug(`Removing ${this.handlerFileName}.js`);
-    await del(join(this.originalServicePath, '*-iopipe.js'), { force: true });
+    const { handlerDir = 'iopipe_handlers' } = this.getOptions();
+    fs.removeSync(join(this.originalServicePath, handlerDir));
     this.track({
       action: 'finish'
     })

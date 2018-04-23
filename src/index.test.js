@@ -229,7 +229,10 @@ test('Gets funcs', () => {
 test('Can create iopipe handler file', () => {
   Plugin.getOptions({ token: 'TEST_TOKEN' });
   Plugin.createFiles();
-  const file = readFileSync(path.join(prefix, 'simple-0-iopipe.js'), 'utf8');
+  const file = readFileSync(
+    path.join(prefix, 'iopipe_handlers/simple-0-iopipe.js'),
+    'utf8'
+  );
   expect(file).toBeDefined();
   expect(file).toMatchSnapshot();
 });
@@ -237,7 +240,10 @@ test('Can create iopipe handler file', () => {
 test('Agent instantiation is blank if no iopipeToken in custom section of serverless.yml', () => {
   Plugin.getOptions({ token: '' });
   Plugin.createFiles();
-  const file = readFileSync(path.join(prefix, 'simple-0-iopipe.js'), 'utf8');
+  const file = readFileSync(
+    path.join(prefix, 'iopipe_handlers/simple-0-iopipe.js'),
+    'utf8'
+  );
   expect(file).toBeDefined();
   expect(file.split('\n')[0]).toEqual("const iopipe = require('iopipe')();");
 });
@@ -245,6 +251,6 @@ test('Agent instantiation is blank if no iopipeToken in custom section of server
 test('Cleans up', () => {
   Plugin.finish();
   const files = readdirSync(prefix);
-  expect(_.includes(files, 'iopipe-handlers.js')).toBeFalsy();
+  expect(_.includes(files, 'iopipe_handlers')).toBeFalsy();
   expect(_.includes(files, 'serverless.yml')).toBeTruthy();
 });

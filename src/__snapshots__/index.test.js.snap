@@ -6,7 +6,7 @@ exports[`Can create iopipe handler file 1`] = `
 exports['simple'] = function attemptSimple(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      return require('./handlers/simple').handler(evt, ctx, cb);
+      return require('../handlers/simple').handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;

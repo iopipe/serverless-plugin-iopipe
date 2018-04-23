@@ -1,4 +1,4 @@
-service: sls-unit-test-default
+service: sls-test
 provider:
   name: aws
   runtime: nodejs6.10
