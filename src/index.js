@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { join } from 'path';
+import { join, posix } from 'path';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import debugLib from 'debug';
@@ -400,7 +400,7 @@ class ServerlessIOpipePlugin {
       _.set(
         this.sls.service.functions,
         `${obj.name}.handler`,
-        join(handlerDir, `${obj.name}-${index}-iopipe.${obj.name}`)
+        posix.join(handlerDir, `${obj.name}-${index}-iopipe.${obj.name}`)
       );
     });
   }
