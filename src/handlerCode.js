@@ -1,4 +1,7 @@
 let handler, handlerError;
+// automatically generated require statement by the plugin
+// aimed to provide syntax/type errors to the iopipe service
+// the original file is imported as text with capitalized tokens replaced
 try {
   handler = require('../RELATIVE_PATH');
 } catch (err) {
