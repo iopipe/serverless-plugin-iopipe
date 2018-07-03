@@ -3,10 +3,20 @@
 exports[`Can create iopipe handler file 1`] = `
 "const iopipe = require('iopipe')({\\"token\\":\\"TEST_TOKEN\\"});
 
+let handler, handlerError;
+try {
+  handler = require('../handlers/simple');
+} catch (err) {
+  handlerError = err;
+}
+
 exports['simple'] = function attemptSimple(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      return require('../handlers/simple').handler(evt, ctx, cb);
+      if (handlerError) {
+        return cb(handlerError);
+      }
+      return handler.handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;

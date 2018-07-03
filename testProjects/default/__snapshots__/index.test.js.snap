@@ -3,10 +3,20 @@
 exports[`Generated files require plugin, include plugin inline, and export original handler 1`] = `
 "const iopipe = require('iopipe')({\\"token\\":\\"test-token\\"});
 
+let handler, handlerError;
+try {
+  handler = require('../handlers/simple');
+} catch (err) {
+  handlerError = err;
+}
+
 exports['simple'] = function attemptSimple(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      return require('../handlers/simple').handler(evt, ctx, cb);
+      if (handlerError) {
+        return cb(handlerError);
+      }
+      return handler.handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -18,10 +28,20 @@ exports['simple'] = function attemptSimple(event, context, callback) {
 exports[`Generated files require plugin, include plugin inline, and export original handler 2`] = `
 "const iopipe = require('iopipe')({\\"token\\":\\"test-token\\"});
 
+let handler, handlerError;
+try {
+  handler = require('../handlers/differentName');
+} catch (err) {
+  handlerError = err;
+}
+
 exports['nameMismatch'] = function attemptNameMismatch(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      return require('../handlers/differentName').wow(evt, ctx, cb);
+      if (handlerError) {
+        return cb(handlerError);
+      }
+      return handler.wow(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
@@ -33,10 +53,20 @@ exports['nameMismatch'] = function attemptNameMismatch(event, context, callback)
 exports[`Generated files require plugin, include plugin inline, and export original handler 3`] = `
 "const iopipe = require('iopipe')({\\"token\\":\\"test-token\\"});
 
+let handler, handlerError;
+try {
+  handler = require('../handlers/syntaxError');
+} catch (err) {
+  handlerError = err;
+}
+
 exports['syntaxError'] = function attemptSyntaxError(event, context, callback) {
   try {
     return iopipe((evt, ctx, cb) => {
-      return require('../handlers/syntaxError').handler(evt, ctx, cb);
+      if (handlerError) {
+        return cb(handlerError);
+      }
+      return handler.handler(evt, ctx, cb);
     })(event, context, callback);
   } catch (err) {
     throw err;
