@@ -6,6 +6,9 @@ require('@iopipe/trace');
 const iopipe = require('@iopipe/core')({\\"plugins\\":[\\"@iopipe/event-info\\",\\"@iopipe/trace\\"],\\"token\\":\\"test-token\\"});
 
 let handler, handlerError;
+// automatically generated require statement by the plugin
+// aimed to provide syntax/type errors to the iopipe service
+// the original file is imported as text with capitalized tokens replaced
 try {
   handler = require('../handlers/simple');
 } catch (err) {
