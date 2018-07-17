@@ -237,7 +237,7 @@ test('Can create iopipe handler file', () => {
   expect(file).toMatchSnapshot();
 });
 
-test('Agent instantiation is blank if no iopipeToken in custom section of serverless.yml', () => {
+test('Agent instantiation only includes installMethod if no iopipeToken in custom section of serverless.yml', () => {
   Plugin.getOptions({ token: '' });
   Plugin.createFiles();
   const file = readFileSync(
@@ -245,7 +245,9 @@ test('Agent instantiation is blank if no iopipeToken in custom section of server
     'utf8'
   );
   expect(file).toBeDefined();
-  expect(file.split('\n')[0]).toEqual("const iopipe = require('iopipe')();");
+  expect(file.split('\n')[0]).toEqual(
+    'const iopipe = require(\'iopipe\')({"installMethod":"serverless-plugin-iopipe@0.0.0-semantically-released"});'
+  );
 });
 
 test('Cleans up', () => {
