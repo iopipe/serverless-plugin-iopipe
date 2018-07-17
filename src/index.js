@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import debugLib from 'debug';
 import cosmiconfig from 'cosmiconfig';
 
+import thisPkg from '../package';
 import { getVisitor, track } from './util/track';
 import hrMillis from './util/hrMillis';
 import handlerCode from './handlerCode';
@@ -351,7 +352,7 @@ class ServerlessIOpipePlugin {
       throw new Error(err);
     }
   }
-  getConfigFromCosmi() {
+  getConfig() {
     const { token } = this.getOptions();
     const { config: cosmi = {} } =
       cosmiconfig('iopipe', {
@@ -364,10 +365,13 @@ class ServerlessIOpipePlugin {
       .join('')
       .defaultTo('')
       .value();
-    const inlineConfigObject = _.pickBy(_.assign({}, cosmi, { token }));
-    const inlineConfig = _.isEmpty(inlineConfigObject)
-      ? ''
-      : JSON.stringify(inlineConfigObject);
+    const inlineConfigObject = _.pickBy(
+      _.assign({}, cosmi, {
+        token,
+        installMethod: `${thisPkg.name}@${thisPkg.version}`
+      })
+    );
+    const inlineConfig = JSON.stringify(inlineConfigObject);
     return {
       requireLines,
       inlineConfig
@@ -376,7 +380,7 @@ class ServerlessIOpipePlugin {
   createFiles() {
     const debug = createDebugger('createFiles');
     debug('Creating file');
-    const { inlineConfig, requireLines } = this.getConfigFromCosmi();
+    const { inlineConfig, requireLines } = this.getConfig();
     const { handlerDir } = this.getOptions();
     const iopipeInclude = `${requireLines}const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
     this.funcs.forEach((func, index) => {

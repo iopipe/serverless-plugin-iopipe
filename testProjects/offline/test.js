@@ -2,7 +2,7 @@ const gotLib = require('got');
 const spawn = require('cross-spawn');
 
 const got = str => gotLib(str, { json: true });
-const BASE = `http://localhost:4982`;
+const BASE = `http://127.0.0.1:4982`;
 
 async function run() {
   // make sure that the error state works too
