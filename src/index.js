@@ -362,6 +362,9 @@ class ServerlessIOpipePlugin {
       }).load(process.cwd()) || {};
 
     const plugins = (cosmi.plugins || []).map(plugin => {
+      // plugins can be specified as strings or as arrays with 2 entries
+      // ["@iopipe/trace", ["@iopipe/logger", {"enabled": true}]]
+      // create require calls for each scenario
       const pluginModule = _.isArray(plugin) ? plugin[0] : plugin;
       const pluginConfig = _.isArray(plugin) ? JSON.stringify(plugin[1]) : '';
       return `require('${pluginModule}')(${pluginConfig})`;
@@ -370,16 +373,15 @@ class ServerlessIOpipePlugin {
     const inlineConfigObject = _.pickBy(
       _.assign({}, cosmi, {
         token,
-        plugins: undefined,
         installMethod: `${thisPkg.name}@${thisPkg.version}`,
         // ⬇ this will be replaced with plugin require block that cannot be JSON.stringified
-        xxx: 'replace'
+        plugins: 'xxx'
       })
     );
 
     let inlineConfig = JSON.stringify(inlineConfigObject);
     inlineConfig = inlineConfig.replace(
-      /"xxx":"replace"/,
+      /"plugins":"xxx"/,
       `"plugins":[${plugins.join(',')}]`
     );
 
