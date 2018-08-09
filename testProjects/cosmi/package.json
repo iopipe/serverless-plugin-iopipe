@@ -4,8 +4,9 @@
   "description": "",
   "main": "handler.js",
   "dependencies": {
-    "@iopipe/core": "^1.8.0",
+    "@iopipe/core": "1.13.0",
     "@iopipe/event-info": "^0.1.1",
+    "@iopipe/logger": "^1.0.0",
     "@iopipe/trace": "^0.3.0"
   },
   "scripts": {
@@ -19,7 +20,13 @@
   "iopipe": {
     "plugins": [
       "@iopipe/event-info",
-      "@iopipe/trace"
+      "@iopipe/trace",
+      [
+        "@iopipe/logger",
+        {
+          "enabled": true
+        }
+      ]
     ]
   }
 }

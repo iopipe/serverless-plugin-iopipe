@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Generated files require plugin, include plugin inline, and export original handler 1`] = `
-"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\",\\"installMethod\\":\\"serverless-plugin-iopipe@0.0.0-semantically-released\\"});
+"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\",\\"installMethod\\":\\"serverless-plugin-iopipe@0.0.0-semantically-released\\",\\"plugins\\":[]});
 
 let handler, handlerError;
 // The following is an automatically generated require statement by the plugin,
@@ -29,7 +29,7 @@ exports['simple'] = function attemptSimple(event, context, callback) {
 `;
 
 exports[`Generated files require plugin, include plugin inline, and export original handler 2`] = `
-"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\",\\"installMethod\\":\\"serverless-plugin-iopipe@0.0.0-semantically-released\\"});
+"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\",\\"installMethod\\":\\"serverless-plugin-iopipe@0.0.0-semantically-released\\",\\"plugins\\":[]});
 
 let handler, handlerError;
 // The following is an automatically generated require statement by the plugin,
@@ -57,7 +57,7 @@ exports['nameMismatch'] = function attemptNameMismatch(event, context, callback)
 `;
 
 exports[`Generated files require plugin, include plugin inline, and export original handler 3`] = `
-"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\",\\"installMethod\\":\\"serverless-plugin-iopipe@0.0.0-semantically-released\\"});
+"const iopipe = require('iopipe')({\\"token\\":\\"test-token\\",\\"installMethod\\":\\"serverless-plugin-iopipe@0.0.0-semantically-released\\",\\"plugins\\":[]});
 
 let handler, handlerError;
 // The following is an automatically generated require statement by the plugin,

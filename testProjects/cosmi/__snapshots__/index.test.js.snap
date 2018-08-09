@@ -1,9 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Generated files requires plugin and includes plugin inline 1`] = `
-"require('@iopipe/event-info');
-require('@iopipe/trace');
-const iopipe = require('@iopipe/core')({\\"plugins\\":[\\"@iopipe/event-info\\",\\"@iopipe/trace\\"],\\"token\\":\\"test-token\\",\\"installMethod\\":\\"serverless-plugin-iopipe@0.0.0-semantically-released\\"});
+"const iopipe = require('@iopipe/core')({\\"plugins\\":[require('@iopipe/event-info')(),require('@iopipe/trace')(),require('@iopipe/logger')({\\"enabled\\":true})],\\"token\\":\\"test-token\\",\\"installMethod\\":\\"serverless-plugin-iopipe@0.0.0-semantically-released\\"});
 
 let handler, handlerError;
 // The following is an automatically generated require statement by the plugin,

@@ -360,29 +360,41 @@ class ServerlessIOpipePlugin {
         sync: true,
         rcExtensions: true
       }).load(process.cwd()) || {};
-    const requireLines = _.chain(cosmi.plugins)
-      .map(p => `require('${p}');\n`)
-      .join('')
-      .defaultTo('')
-      .value();
+
+    const plugins = (cosmi.plugins || []).map(plugin => {
+      // plugins can be specified as strings or as arrays with 2 entries
+      // ["@iopipe/trace", ["@iopipe/logger", {"enabled": true}]]
+      // create require calls for each scenario
+      const pluginModule = _.isArray(plugin) ? plugin[0] : plugin;
+      const pluginConfig = _.isArray(plugin) ? JSON.stringify(plugin[1]) : '';
+      return `require('${pluginModule}')(${pluginConfig})`;
+    });
+
     const inlineConfigObject = _.pickBy(
       _.assign({}, cosmi, {
         token,
-        installMethod: `${thisPkg.name}@${thisPkg.version}`
+        installMethod: `${thisPkg.name}@${thisPkg.version}`,
+        // ⬇ this will be replaced with plugin require block that cannot be JSON.stringified
+        plugins: 'xxx'
       })
     );
-    const inlineConfig = JSON.stringify(inlineConfigObject);
+
+    let inlineConfig = JSON.stringify(inlineConfigObject);
+    inlineConfig = inlineConfig.replace(
+      /"plugins":"xxx"/,
+      `"plugins":[${plugins.join(',')}]`
+    );
+
     return {
-      requireLines,
       inlineConfig
     };
   }
   createFiles() {
     const debug = createDebugger('createFiles');
     debug('Creating file');
-    const { inlineConfig, requireLines } = this.getConfig();
+    const { inlineConfig } = this.getConfig();
     const { handlerDir } = this.getOptions();
-    const iopipeInclude = `${requireLines}const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
+    const iopipeInclude = `const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
     this.funcs.forEach((func, index) => {
       const handler = outputHandlerCode(func);
       const contents = `${iopipeInclude}\n\n${handler}`;
