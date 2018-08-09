@@ -245,9 +245,7 @@ test('Agent instantiation only includes installMethod if no iopipeToken in custo
     'utf8'
   );
   expect(file).toBeDefined();
-  expect(file.split('\n')[0]).toEqual(
-    'const iopipe = require(\'iopipe\')({"installMethod":"serverless-plugin-iopipe@0.0.0-semantically-released"});'
-  );
+  expect(file.split('\n')[0]).toMatchSnapshot();
 });
 
 test('Cleans up', () => {
