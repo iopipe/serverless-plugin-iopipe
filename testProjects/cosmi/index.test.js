@@ -18,7 +18,7 @@ afterAll(() => {
 test('Generated files requires plugin and includes plugin inline', async () => {
   const simpleRes = await run({
     dir,
-    file: 'simple-0-iopipe.js'
+    file: 'simple-iopipe.js'
   });
   expect(simpleRes).toBe(200);
 });
