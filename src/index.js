@@ -122,6 +122,7 @@ class ServerlessIOpipePlugin {
     this.hooks = {
       'iopipe:run': this.greeting.bind(this),
       'before:package:createDeploymentArtifacts': this.run.bind(this),
+      'before:deploy:function:packageFunction': this.run.bind(this),
       'before:invoke:local:invoke': this.run.bind(this),
       'before:offline:start:init': this.run.bind(this),
       'before:step-functions-offline:start': this.run.bind(this),
@@ -395,14 +396,14 @@ class ServerlessIOpipePlugin {
     const { inlineConfig } = this.getConfig();
     const { handlerDir } = this.getOptions();
     const iopipeInclude = `const iopipe = require('${this.getInstalledPackageName()}')(${inlineConfig});`;
-    this.funcs.forEach((func, index) => {
+    this.funcs.forEach(func => {
       const handler = outputHandlerCode(func);
       const contents = `${iopipeInclude}\n\n${handler}`;
       fs.ensureDirSync(join(this.originalServicePath, handlerDir));
       fs.writeFileSync(
         join(
           this.originalServicePath,
-          join(handlerDir, `${func.name}-${index}-iopipe.js`)
+          join(handlerDir, `${func.name}-iopipe.js`)
         ),
         contents
       );
@@ -412,11 +413,11 @@ class ServerlessIOpipePlugin {
     const debug = createDebugger('assignHandlers');
     debug('Assigning iopipe handlers to sls service');
     const { handlerDir } = this.getOptions();
-    this.funcs.forEach((obj, index) => {
+    this.funcs.forEach(obj => {
       _.set(
         this.sls.service.functions,
         `${obj.name}.handler`,
-        posix.join(handlerDir, `${obj.name}-${index}-iopipe.${obj.name}`)
+        posix.join(handlerDir, `${obj.name}-iopipe.${obj.name}`)
       );
     });
   }

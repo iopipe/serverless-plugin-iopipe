@@ -18,19 +18,19 @@ afterAll(() => {
 test('Generated files require plugin, include plugin inline, and export original handler', async () => {
   const simpleRes = await run({
     dir,
-    file: 'simple-0-iopipe.js'
+    file: 'simple-iopipe.js'
   });
   expect(simpleRes.statusCode).toBe(200);
 
   const nameMismatchRes = await run({
     dir,
-    file: 'nameMismatch-8-iopipe.js'
+    file: 'nameMismatch-iopipe.js'
   });
   expect(nameMismatchRes).toBe(301);
 
   const syntaxErrorRes = await run({
     dir,
-    file: 'syntaxError-6-iopipe.js'
+    file: 'syntaxError-iopipe.js'
   });
   expect(syntaxErrorRes.message).toMatch(/Unexpected\stoken,\s/);
 });

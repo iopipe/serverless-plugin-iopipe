@@ -230,7 +230,7 @@ test('Can create iopipe handler file', () => {
   Plugin.getOptions({ token: 'TEST_TOKEN' });
   Plugin.createFiles();
   const file = readFileSync(
-    path.join(prefix, 'iopipe_handlers/simple-0-iopipe.js'),
+    path.join(prefix, 'iopipe_handlers/simple-iopipe.js'),
     'utf8'
   );
   expect(file).toBeDefined();
@@ -241,7 +241,7 @@ test('Agent instantiation only includes installMethod if no iopipeToken in custo
   Plugin.getOptions({ token: '' });
   Plugin.createFiles();
   const file = readFileSync(
-    path.join(prefix, 'iopipe_handlers/simple-0-iopipe.js'),
+    path.join(prefix, 'iopipe_handlers/simple-iopipe.js'),
     'utf8'
   );
   expect(file).toBeDefined();
