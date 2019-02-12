@@ -21,7 +21,7 @@
     "cross-spawn": "^6.0.4",
     "pre-commit": "^1.2.2",
     "raw-loader": "^0.5.1",
-    "serverless": "1.23.0",
+    "serverless": "1.32.0",
     "uglify-es": "^3.0.27",
     "webpack": "^2.6.1",
     "webpack-node-externals": "^1.6.0",
